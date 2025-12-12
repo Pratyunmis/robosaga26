@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Mail, Phone, Linkedin, Facebook, Instagram } from "lucide-react";
 
 export default function Footer() {
@@ -8,9 +9,13 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* About */}
           <div>
-            <h3 className="text-yellow-400 font-bold text-lg mb-4">
-              RoboSaga '26
-            </h3>
+            <Image
+              src="/svg/robosaga.svg"
+              alt="RoboSaga Logo"
+              width={200}
+              height={60}
+              className="h-16 w-auto mb-4"
+            />
             <p className="text-gray-400 text-sm">
               Pioneering Innovation, Redefining Robotics. Presented by
               Robolution, BIT Mesra.
