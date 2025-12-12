@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -53,24 +52,24 @@ export default function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 sm:pt-20">
         {/* Animated Background Elements */}
         <div className="inset-0 z-10 absolute bg-black/50 pointer-events-none" />
 
         <Vortex
           backgroundColor="black"
-          className="flex items-center flex-col justify-center px-2 md:px-10 py-4 w-full h-full"
+          className="flex items-center flex-col justify-center px-4 sm:px-6 md:px-10 py-8 sm:py-12 md:py-4 w-full h-full"
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10 w-full">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.15, type: "spring", stiffness: 100 }}
-              className="mb-2"
+              className="mb-3 sm:mb-4 md:mb-2"
             >
-              <p className="text-xl md:text-2xl text-[#176AA2] font-bold tracking-widest">
+              <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-[#176AA2] font-bold tracking-widest">
                 <span className="inline-block">ROBOLUTION</span>
-                <span className="text-[#D9D9D9] mx-2">PRESENTS</span>
+                <span className="text-[#D9D9D9] mx-1 sm:mx-2">PRESENTS</span>
               </p>
             </motion.div>
 
@@ -78,7 +77,7 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3, type: "spring", stiffness: 120 }}
-              className="text-6xl md:text-8xl font-bold mb-4"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-4 sm:mb-6 leading-tight"
             >
               <motion.span
                 className="text-[#F8C437]"
@@ -113,7 +112,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-xl md:text-2xl text-gray-300 mb-2"
+              className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 mb-4 sm:mb-3 md:mb-2 px-4 sm:px-0"
             >
               Pioneering Innovation, Redefining Robotics
             </motion.p>
@@ -122,13 +121,14 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="text-lg md:text-xl text-yellow-400 mb-8 flex items-center justify-center gap-4 flex-wrap"
+              className="text-sm sm:text-base md:text-lg lg:text-xl text-yellow-400 mb-6 sm:mb-8 flex items-center justify-center gap-2 sm:gap-4 flex-wrap px-4 sm:px-0"
             >
-              <span className="flex items-center gap-2">
-                <Calendar className="w-5 h-5" /> 23-25 January, 2026
+              <span className="flex items-center gap-1 sm:gap-2">
+                <Calendar className="w-4 h-4 sm:w-5 sm:h-5" /> 23-25 January,
+                2026
               </span>
-              <span className="flex items-center gap-2">
-                <MapPin className="w-5 h-5" /> BIT Mesra, Ranchi
+              <span className="flex items-center gap-1 sm:gap-2">
+                <MapPin className="w-4 h-4 sm:w-5 sm:h-5" /> BIT Mesra, Ranchi
               </span>
             </motion.p>
 
@@ -136,17 +136,20 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
+              className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0"
             >
-              <Link href="/events">
-                <Button variant="pacman" className="text-lg px-8 py-6">
+              <Link href="/events" className="w-full sm:w-auto">
+                <Button
+                  variant="pacman"
+                  className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 w-full sm:w-auto"
+                >
                   Explore Events
                 </Button>
               </Link>
-              <Link href="/teams">
+              <Link href="/teams" className="w-full sm:w-auto">
                 <Button
                   variant="outline"
-                  className="text-lg px-8 py-6 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black"
+                  className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 w-full sm:w-auto border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black"
                 >
                   Register Team
                 </Button>
@@ -157,7 +160,7 @@ export default function Home() {
 
         {/* Scroll Indicator */}
         <motion.div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 hidden sm:block"
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
@@ -168,9 +171,9 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-black/50">
+      <section className="py-12 sm:py-16 md:py-20 bg-black/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10">
             {stats.map((stat, index) => {
               const IconComponent = stat.icon;
               return (
@@ -180,13 +183,15 @@ export default function Home() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  className="text-center grid place-items-center"
+                  className="text-center flex flex-col items-center justify-center p-4 sm:p-6 rounded-lg bg-linear-to-b from-blue-950/30 to-transparent border border-yellow-400/20 hover:border-yellow-400/50 transition-all duration-300"
                 >
-                  <div className="text-4xl flex md:text-5xl font-bold text-yellow-400 mb-2 gap-2">
-                    <IconComponent className="w-12 h-12 text-yellow-400" />
+                  <IconComponent className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-yellow-400 mb-2 sm:mb-3" />
+                  <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-yellow-400 mb-1 sm:mb-2">
                     {stat.value}
                   </div>
-                  <div className="text-gray-400">{stat.label}</div>
+                  <div className="text-xs sm:text-sm md:text-base text-gray-400 font-medium">
+                    {stat.label}
+                  </div>
                 </motion.div>
               );
             })}

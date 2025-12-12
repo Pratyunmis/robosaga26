@@ -10,9 +10,15 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.1",
+    "@hookform/resolvers": "^5.2.2",
+    "@lottiefiles/dotlottie-react": "^0.17.10",
     "@neondatabase/serverless": "^1.0.2",
+    "@radix-ui/react-label": "^2.1.8",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-slot": "^1.2.4",
     "@tanstack/react-query": "^5.90.12",
     "axios": "^1.13.2",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.0",
@@ -22,10 +28,14 @@
     "motion": "^12.23.26",
     "next": "16.0.8",
     "next-auth": "^5.0.0-beta.30",
+    "next-themes": "^0.4.6",
     "react": "19.2.1",
     "react-dom": "19.2.1",
+    "react-hook-form": "^7.68.0",
     "simplex-noise": "^4.0.3",
-    "tailwind-merge": "^3.4.0"
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.4.0",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -1,52 +1,55 @@
-import { db } from '@/db'
-import { teamMembers, teams, users } from '@/db/schema'
-import { auth } from '@/lib/auth'
-import { eq, desc } from 'drizzle-orm'
-import { Hono } from 'hono'
-import { handle } from 'hono/vercel'
-import type { Context } from 'hono'
+import { db } from "@/db";
+import { teamMembers, teams, users } from "@/db/schema";
+import { auth } from "@/lib/auth";
+import { eq, desc } from "drizzle-orm";
+import { Hono } from "hono";
+import { handle } from "hono/vercel";
+import type { Context } from "hono";
 
 // Define session type
 type Session = {
   user: {
-    id: string
-    name?: string | null
-    email?: string | null
-    image?: string | null
-  }
-}
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
+};
 
 // Define context variables
 type Variables = {
-  session: Session
-}
+  session: Session;
+};
 
-const app = new Hono<{ Variables: Variables }>().basePath('/api')
+const app = new Hono<{ Variables: Variables }>().basePath("/api");
 
 // Helper function to get session from cookie
 async function getSessionFromCookie() {
   // NextAuth stores session in a cookie, we can verify it through auth()
-  const session = await auth()
-  return session
+  const session = await auth();
+  return session;
 }
 
 // Middleware to verify authenticated user
-async function requireAuth(c: Context<{ Variables: Variables }>, next: () => Promise<void>) {
-  const session = await getSessionFromCookie()
-  
+async function requireAuth(
+  c: Context<{ Variables: Variables }>,
+  next: () => Promise<void>
+) {
+  const session = await getSessionFromCookie();
+
   if (!session?.user?.id) {
-    return c.json({ error: 'Unauthorized - Please log in' }, 401)
+    return c.json({ error: "Unauthorized - Please log in" }, 401);
   }
-  
-  c.set('session', session as Session)
-  await next()
+
+  c.set("session", session as Session);
+  await next();
 }
 
-app.get('/hello', (c) => {
+app.get("/hello", (c) => {
   return c.json({
-    message: 'Hello Next.js!',
-  })
-})
+    message: "Hello Next.js!",
+  });
+});
 
 // Public route - Get team by slug
 app.get("/teams/:slug", async (c) => {
@@ -61,10 +64,7 @@ app.get("/teams/:slug", async (c) => {
       .limit(1);
 
     if (!team) {
-      return c.json(
-        { error: "Team not found" },
-        404
-      );
+      return c.json({ error: "Team not found" }, 404);
     }
 
     // Get team members
@@ -90,10 +90,7 @@ app.get("/teams/:slug", async (c) => {
     });
   } catch (error) {
     console.error("Error fetching team:", error);
-    return c.json(
-      { error: "Internal server error" },
-      500
-    );
+    return c.json({ error: "Internal server error" }, 500);
   }
 });
 
@@ -145,14 +142,14 @@ app.get("/leaderboard", async (c) => {
 });
 
 // Apply authentication middleware to protected routes
-app.use('/teams/user/*', requireAuth)
-app.use('/teams/create', requireAuth)
-app.use('/teams/join', requireAuth)
+app.use("/teams/user/*", requireAuth);
+app.use("/teams/create", requireAuth);
+app.use("/teams/join", requireAuth);
 
 // Protected route - Get current user's team
 app.get("/teams/user/me", async (c) => {
   try {
-    const session = c.get('session');
+    const session = c.get("session");
 
     // Find user's team membership
     const [membership] = await db
@@ -196,17 +193,14 @@ app.get("/teams/user/me", async (c) => {
     });
   } catch (error) {
     console.error("Error fetching user team:", error);
-    return c.json(
-      { error: "Internal server error" },
-      500
-    );
+    return c.json({ error: "Internal server error" }, 500);
   }
 });
 
 // Protected route - Create a new team
 app.post("/teams/create", async (c) => {
   try {
-    const session = c.get('session');
+    const session = c.get("session");
     const body = await c.req.json();
     const teamName = body.teamName;
 
@@ -255,17 +249,14 @@ app.post("/teams/create", async (c) => {
     return c.json({ success: true, slug: newTeam.slug });
   } catch (error) {
     console.error("Error creating team:", error);
-    return c.json(
-      { error: "Internal server error" },
-      500
-    );
+    return c.json({ error: "Internal server error" }, 500);
   }
 });
 
 // Protected route - Join a team
 app.post("/teams/join", async (c) => {
   try {
-    const session = c.get('session');
+    const session = c.get("session");
     const body = await c.req.json();
     const slug = body.slug;
 
@@ -304,14 +295,62 @@ app.post("/teams/join", async (c) => {
     return c.json({ success: true, teamName: team.name });
   } catch (error) {
     console.error("Error joining team:", error);
-    return c.json(
-      { error: "Internal server error" },
-      500
-    );
+    return c.json({ error: "Internal server error" }, 500);
   }
-})
+});
 
-export const GET = handle(app)
-export const POST = handle(app)
-export const PUT = handle(app)
-export const DELETE = handle(app)
+// Onboarding route handlers
+app.post("/onboarding", async (c) => {
+  try {
+    const session = await auth();
+
+    if (!session || !session.user || !session.user.id) {
+      return c.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await c.req.json();
+    const { rollno, branch, phoneNo } = body;
+
+    // Validate input
+    if (!rollno || !branch || !phoneNo) {
+      return c.json(
+        { message: "Roll number, branch, and phone number are required" },
+        { status: 400 }
+      );
+    }
+
+    // Check if roll number already exists
+    const existingUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.rollNo, rollno))
+      .limit(1);
+
+    if (existingUser.length > 0 && existingUser[0].id !== session.user.id) {
+      return c.json(
+        { message: "This roll number is already registered" },
+        { status: 400 }
+      );
+    }
+
+    // Update user with rollNo and branch
+    await db
+      .update(users)
+      .set({
+        rollNo: rollno,
+        branch,
+        phoneNo,
+      })
+      .where(eq(users.id, session.user.id));
+
+    return c.json({ message: "Profile updated successfully" }, { status: 200 });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    return c.json({ message: "Internal server error" }, { status: 500 });
+  }
+});
+
+export const GET = handle(app);
+export const POST = handle(app);
+export const PUT = handle(app);
+export const DELETE = handle(app);

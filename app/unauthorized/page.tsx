@@ -68,6 +68,7 @@ export default function UnauthorizedPage() {
                 <Image
                   src="/svg/robosaga.svg"
                   alt="RoboSaga Logo"
+                  loading="eager"
                   width={96}
                   height={96}
                   className="mx-auto opacity-50"

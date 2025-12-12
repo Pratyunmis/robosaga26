@@ -5,9 +5,13 @@ import { redirect } from "next/navigation";
 export default async function LoginPage() {
   const session = await auth();
 
-  //   if (session) {
-  //     redirect("/");
-  //   }
+  if (session) {
+    // If user doesn't have rollNo, redirect to onboarding
+    if (!session.user?.rollNo) {
+      redirect("/onboarding");
+    }
+    redirect("/");
+  }
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4 overflow-hidden relative">
@@ -83,6 +87,7 @@ export default async function LoginPage() {
               <Image
                 src="/svg/robosaga.svg"
                 alt="RoboSaga '26 Logo"
+                loading="eager"
                 width={280}
                 height={100}
                 className="h-20 w-auto"
@@ -115,7 +120,7 @@ export default async function LoginPage() {
             <form
               action={async () => {
                 "use server";
-                await signIn("github", { redirectTo: "/" });
+                await signIn("github", { redirectTo: "/onboarding" });
               }}
             >
               <button
@@ -136,7 +141,7 @@ export default async function LoginPage() {
             <form
               action={async () => {
                 "use server";
-                await signIn("google", { redirectTo: "/" });
+                await signIn("google", { redirectTo: "/onboarding" });
               }}
             >
               <button

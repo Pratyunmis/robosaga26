@@ -38,6 +38,7 @@ export default function Navbar() {
     { href: "/", label: "Home" },
     { href: "/events", label: "Events" },
     { href: "/leaderboard", label: "Leaderboard" },
+    { href: "/hackaway", label: "Hackaway" },
     { href: "/sponsors", label: "Sponsors" },
     { href: "/teams", label: "Teams" },
     { href: "/contact", label: "Contact" },
@@ -51,7 +52,8 @@ export default function Navbar() {
             <Image
               src="/svg/robosaga.svg"
               alt="RoboSaga Logo"
-              width={180}
+              loading="eager"
+              width={50}
               height={50}
               className="h-12 w-auto"
             />

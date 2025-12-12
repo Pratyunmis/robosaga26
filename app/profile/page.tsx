@@ -8,8 +8,19 @@ import { Button } from "@/components/ui/button";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Mail, Calendar, LogOut, User, Trophy, Users } from "lucide-react";
+import {
+  Mail,
+  Calendar,
+  LogOut,
+  User,
+  Trophy,
+  Users,
+  Phone,
+  GraduationCap,
+  Hash,
+} from "lucide-react";
 import Image from "next/image";
+import PacmanLoader from "@/components/PacmanLoader";
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -24,7 +35,7 @@ export default function ProfilePage() {
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-linear-to-b from-black via-blue-950 to-black text-white flex items-center justify-center">
-        <div className="text-yellow-400 text-2xl">Loading...</div>
+        <PacmanLoader />
       </div>
     );
   }
@@ -52,7 +63,7 @@ export default function ProfilePage() {
           />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm font-medium:px-6 lg:px-8 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -81,9 +92,11 @@ export default function ProfilePage() {
                     {session.user?.image ? (
                       <div className="relative w-32 h-32 mx-auto">
                         <Image
+                          height={200}
+                          width={200}
+                          aria-label={`${session.user.name} Profile Picture`}
                           src={session.user.image}
                           alt={session.user.name || "User"}
-                          fill
                           className="rounded-full border-4 border-yellow-400 object-cover"
                         />
                       </div>
@@ -100,14 +113,44 @@ export default function ProfilePage() {
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-3 text-gray-300">
                     <Mail className="w-5 h-5 text-yellow-400" />
-                    <span className="text-sm break-all">
+                    <span className="text-sm font-medium break-all">
                       {session.user?.email || "No email"}
                     </span>
                   </div>
+                  {session.user?.rollNo && (
+                    <div className="flex items-center space-x-3 text-gray-300">
+                      <Hash className="w-5 h-5 text-yellow-400" />
+                      <span className="text-sm font-medium">
+                        Roll No: {session.user.rollNo}
+                      </span>
+                    </div>
+                  )}
+                  {session.user?.branch && (
+                    <div className="flex items-center space-x-3 text-gray-300">
+                      <GraduationCap className="w-5 h-5 text-yellow-400" />
+                      <span className="text-sm font-medium">{session.user.branch}</span>
+                    </div>
+                  )}
+                  {session.user?.phoneNo && (
+                    <div className="flex items-center space-x-3 text-gray-300">
+                      <Phone className="w-5 h-5 text-yellow-400" />
+                      <span className="text-sm font-medium">
+                        +91 {session.user.phoneNo}
+                      </span>
+                    </div>
+                  )}
+                  {session.user?.role && (
+                    <div className="flex items-center space-x-3 text-gray-300">
+                      <User className="w-5 h-5 text-yellow-400" />
+                      <span className="text-sm font-medium capitalize">
+                        Role: {session.user.role}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex items-center space-x-3 text-gray-300">
                     <Calendar className="w-5 h-5 text-yellow-400" />
-                    <span className="text-sm">
-                      Joined {new Date().toLocaleDateString()}
+                    <span className="text-sm font-medium">
+                      Joined {session.user.joinedAt ? new Date(session.user.joinedAt).toLocaleDateString() : "Unknown"}
                     </span>
                   </div>
                   <Button
@@ -165,7 +208,7 @@ export default function ProfilePage() {
                       <div className="text-3xl font-bold text-yellow-400">
                         0
                       </div>
-                      <div className="text-sm text-gray-400 mt-1">
+                      <div className="text-sm font-medium text-gray-400 mt-1">
                         Events Joined
                       </div>
                     </div>
@@ -173,7 +216,7 @@ export default function ProfilePage() {
                       <div className="text-3xl font-bold text-yellow-400">
                         0
                       </div>
-                      <div className="text-sm text-gray-400 mt-1">
+                      <div className="text-sm font-medium text-gray-400 mt-1">
                         Points Earned
                       </div>
                     </div>
@@ -181,7 +224,7 @@ export default function ProfilePage() {
                       <div className="text-3xl font-bold text-yellow-400">
                         -
                       </div>
-                      <div className="text-sm text-gray-400 mt-1">Rank</div>
+                      <div className="text-sm font-medium text-gray-400 mt-1">Rank</div>
                     </div>
                   </div>
                 </CardContent>

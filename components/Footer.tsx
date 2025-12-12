@@ -13,6 +13,7 @@ export default function Footer() {
               src="/svg/robosaga.svg"
               alt="RoboSaga Logo"
               width={200}
+              loading="eager"
               height={60}
               className="h-16 w-auto mb-4"
             />

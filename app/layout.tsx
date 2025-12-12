@@ -3,6 +3,7 @@ import { Orbitron, Rajdhani, Space_Mono } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/provider/AuthProvider";
 import QueryProvider from "@/provider/QueryProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 const orbitron = Orbitron({
   variable: "--font-orbitron",
@@ -23,7 +24,7 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Robosaga '26 | Robolution BIT Mesra",
+  title: "Robosaga'26 | Robolution BIT Mesra | Robotics Event",
   description:
     "Robosaga'26 - The Ultimate Robotics Competition at BIT Mesra organized by Robolution.",
 };
@@ -40,6 +41,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <QueryProvider>{children}</QueryProvider>
+          <Toaster position="top-right" />
         </AuthProvider>
       </body>
     </html>

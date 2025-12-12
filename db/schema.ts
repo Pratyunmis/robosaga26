@@ -5,9 +5,7 @@ import {
   text,
   primaryKey,
   integer,
-  check,
 } from "drizzle-orm/pg-core"
-import { sql } from "drizzle-orm"
 import type { AdapterAccountType } from "@auth/core/adapters"
  
 
@@ -21,6 +19,12 @@ export const users = pgTable("user", {
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
   role: text("role", { enum: ["admin", "user"] }).notNull().default("user"),
+  rollNo: text("rollNo").unique(),
+  branch: text("branch"),
+  phoneNo: text("phoneNo").unique(),
+  createdAt: timestamp("createdAt", { mode: "date" })
+    .notNull()
+    .defaultNow()
 })
  
 export const accounts = pgTable(
@@ -106,7 +110,7 @@ export const teams = pgTable(
     score: integer("score").notNull().default(0),
     createdAt: timestamp("createdAt", { mode: "date" })
       .notNull()
-      .$defaultFn(() => new Date()),
+      .defaultNow(),
   }
 )
 
