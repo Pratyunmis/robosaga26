@@ -19,10 +19,12 @@
     "framer-motion": "^12.23.26",
     "hono": "^4.10.8",
     "lucide-react": "^0.559.0",
+    "motion": "^12.23.26",
     "next": "16.0.8",
     "next-auth": "^5.0.0-beta.30",
     "react": "19.2.1",
     "react-dom": "19.2.1",
+    "simplex-noise": "^4.0.3",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
