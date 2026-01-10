@@ -37,15 +37,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   callbacks: {
-    async signIn({ user }) {
-      // Allow sign in only for @bitmesra.ac.in emails
-      const email = user.email?.toLowerCase() || "";
-      
-      if (!email.endsWith("@bitmesra.ac.in")) {
-        // Redirect to unauthorized page
-        return "/unauthorized";
-      }
-      
+    async signIn() {
+      // Allow all users to sign in
       return true;
     },
     async jwt({ token, user, trigger }) {
