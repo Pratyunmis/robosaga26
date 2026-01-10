@@ -319,19 +319,19 @@ app.post("/onboarding", async (c) => {
       );
     }
 
-    // Check if roll number already exists
-    const existingUser = await db
-      .select()
-      .from(users)
-      .where(eq(users.rollNo, rollno))
-      .limit(1);
+    //  Check if roll number already exists
+    // const existingUser = await db
+    //   .select()
+    //   .from(users)
+    //   .where(eq(users.rollNo, rollno))
+    //   .limit(1);
 
-    if (existingUser.length > 0 && existingUser[0].id !== session.user.id) {
-      return c.json(
-        { message: "This roll number is already registered" },
-        { status: 400 }
-      );
-    }
+    // if (existingUser.length > 0 && existingUser[0].id !== session.user.id) {
+    //   return c.json(
+    //     { message: "This roll number is already registered" },
+    //     { status: 400 }
+    //   );
+    // }
 
     // Update user with rollNo and branch
     await db
