@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -19,9 +20,78 @@ import {
   Globe,
   Lightbulb,
   Handshake,
+  Camera,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
 } from "lucide-react";
 import { Vortex } from "@/components/ui/vortex";
 import Image from "next/image";
+
+// Gallery images data
+const galleryImages = [
+  {
+    src: "/hackaway/IMG_3641.JPG",
+    alt: "Hackathon participants coding",
+    category: "hackathon",
+    span: "col-span-2 row-span-2",
+  },
+  {
+    src: "/hackaway/IMG_3932.JPG",
+    alt: "Team collaboration",
+    category: "hackathon",
+    span: "col-span-1 row-span-1",
+  },
+  {
+    src: "/hackaway/IMG_3934.JPG",
+    alt: "Coding session",
+    category: "hackathon",
+    span: "col-span-1 row-span-1",
+  },
+  {
+    src: "/hackaway/_MG_7115.JPG",
+    alt: "Award ceremony",
+    category: "speaker",
+    span: "col-span-2 row-span-1",
+  },
+  {
+    src: "/hackaway/IMG_4005.JPG",
+    alt: "Innovation showcase",
+    category: "hackathon",
+    span: "col-span-1 row-span-1",
+  },
+  {
+    src: "/hackaway/IMG_4022.JPG",
+    alt: "Judges panel",
+    category: "speaker",
+    span: "col-span-1 row-span-1",
+  },
+  {
+    src: "/hackaway/IMG_4105.JPG",
+    alt: "Speaker presenting",
+    category: "speaker",
+    span: "col-span-1 row-span-2",
+  },
+  {
+    src: "/hackaway/_MG_7051.JPG",
+    alt: "Expert session",
+    category: "speaker",
+    span: "col-span-1 row-span-1",
+  },
+  {
+    src: "/hackaway/_MG_7055.JPG",
+    alt: "Audience engagement",
+    category: "speaker",
+    span: "col-span-1 row-span-1",
+  },
+  {
+    src: "/hackaway/_MG_7118.JPG",
+    alt: "Network session",
+    category: "speaker",
+    span: "col-span-1 row-span-1",
+  },
+];
 
 export default function Home() {
   const events = [
@@ -48,8 +118,95 @@ export default function Home() {
     { value: "50+", label: "Partners", icon: Handshake },
   ];
 
+  // Gallery state
+  const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const [activeFilter, setActiveFilter] = useState<
+    "all" | "hackathon" | "speaker"
+  >("all");
+  const [imageLoading, setImageLoading] = useState(true);
+
+  const filteredImages =
+    activeFilter === "all"
+      ? galleryImages
+      : galleryImages.filter((img) => img.category === activeFilter);
+
+  const openLightbox = (index: number) => {
+    setImageLoading(true);
+    setSelectedImage(index);
+  };
+
+  const closeLightbox = () => {
+    setSelectedImage(null);
+    setImageLoading(true);
+  };
+
+  const nextImage = () => {
+    if (selectedImage !== null) {
+      setImageLoading(true);
+      setSelectedImage((selectedImage + 1) % filteredImages.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (selectedImage !== null) {
+      setImageLoading(true);
+      setSelectedImage(
+        (selectedImage - 1 + filteredImages.length) % filteredImages.length
+      );
+    }
+  };
+
+  // JSON-LD structured data for SEO
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: "RoboSaga'26",
+    description:
+      "RoboSaga'26 - The Ultimate Robotics Festival at BIT Mesra featuring HackAway hackathon, robotics workshops, exhibitions, and speaker sessions.",
+    startDate: "2026-01-23T19:00:00+05:30",
+    endDate: "2026-01-25T19:30:00+05:30",
+    eventStatus: "https://schema.org/EventScheduled",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    location: {
+      "@type": "Place",
+      name: "Birla Institute of Technology, Mesra",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "BIT Mesra",
+        addressLocality: "Ranchi",
+        addressRegion: "Jharkhand",
+        postalCode: "835215",
+        addressCountry: "IN",
+      },
+    },
+    image: ["https://www.robosaga.robolutionbitm.in/og-image.jpg"],
+    organizer: {
+      "@type": "Organization",
+      name: "Robolution - BIT Mesra",
+      url: "https://www.robosaga.robolutionbitm.in",
+    },
+    performer: {
+      "@type": "Organization",
+      name: "Team Pratyunmis",
+    },
+    offers: {
+      "@type": "Offer",
+      url: "https://www.robosaga.robolutionbitm.in/teams",
+      availability: "https://schema.org/InStock",
+      priceCurrency: "INR",
+      price: "0",
+      validFrom: "2026-01-01T00:00:00+05:30",
+    },
+  };
+
   return (
     <div className="min-h-screen bg-linear-to-b from-black via-blue-950 to-black text-white">
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <Navbar />
 
       {/* Hero Section */}
@@ -225,7 +382,7 @@ export default function Home() {
                 <Image
                   src="/group_photo.jpeg"
                   alt="Group Photo"
-                  className="w-full h-auto"
+                  className="w-full h-auto rounded-md"
                   height={500}
                   width={500}
                 />
@@ -315,6 +472,165 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* Gallery Section */}
+      <section className="py-20 bg-black/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Event <span className="text-yellow-400">Gallery</span>
+            </h2>
+            <div className="w-24 h-1 bg-yellow-400 mx-auto mb-8"></div>
+            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+              Relive the moments from previous editions of RoboSaga
+            </p>
+          </motion.div>
+
+          {/* Filter Tabs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex justify-center mb-10"
+          >
+            <div className="bg-gray-900/80 backdrop-blur-sm p-1.5 rounded-full inline-flex gap-1 border border-yellow-400/20">
+              {[
+                { key: "all", label: "All", icon: Camera },
+                { key: "hackathon", label: "Hackathon", icon: Laptop },
+                { key: "speaker", label: "Speakers", icon: Mic },
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() =>
+                    setActiveFilter(tab.key as "all" | "hackathon" | "speaker")
+                  }
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold transition-all duration-300 ${
+                    activeFilter === tab.key
+                      ? "bg-yellow-400 text-black shadow-lg shadow-yellow-400/30"
+                      : "text-gray-400 hover:text-white hover:bg-white/10"
+                  }`}
+                >
+                  <tab.icon className="w-4 h-4" />
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Bento Grid Gallery */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 auto-rows-[150px] md:auto-rows-[200px]">
+            {filteredImages.map((image, index) => (
+              <motion.div
+                key={image.src}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.05, duration: 0.3 }}
+                viewport={{ once: true }}
+                className={`relative overflow-hidden rounded-xl cursor-pointer group ${image.span}`}
+                onClick={() => openLightbox(index)}
+              >
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                />
+                {/* Border Glow Effect */}
+                <div className="absolute inset-0 border-2 border-yellow-400/0 group-hover:border-yellow-400/60 rounded-xl transition-all duration-300" />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {selectedImage !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
+            onClick={closeLightbox}
+          >
+            {/* Close Button */}
+            <button
+              onClick={closeLightbox}
+              className="absolute top-6 right-6 z-50 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            >
+              <X className="w-6 h-6 text-white" />
+            </button>
+
+            {/* Previous Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                prevImage();
+              }}
+              className="absolute left-4 md:left-8 z-50 p-3 rounded-full bg-white/10 hover:bg-yellow-400 hover:text-black transition-all"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+
+            {/* Image Container */}
+            <motion.div
+              key={selectedImage}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              className="relative max-w-5xl max-h-[85vh] w-full h-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Loading Spinner */}
+              {imageLoading && (
+                <div className="absolute inset-0 flex items-center justify-center z-10">
+                  <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="w-12 h-12 text-yellow-400 animate-spin" />
+                    <span className="text-gray-400 text-sm">Loading...</span>
+                  </div>
+                </div>
+              )}
+              <Image
+                src={filteredImages[selectedImage].src}
+                alt={filteredImages[selectedImage].alt}
+                fill
+                className={`object-contain transition-opacity duration-300 ${
+                  imageLoading ? "opacity-0" : "opacity-100"
+                }`}
+                sizes="100vw"
+                priority
+                onLoad={() => setImageLoading(false)}
+              />
+            </motion.div>
+
+            {/* Next Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                nextImage();
+              }}
+              className="absolute right-4 md:right-8 z-50 p-3 rounded-full bg-white/10 hover:bg-yellow-400 hover:text-black transition-all"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+
+            {/* Image Counter */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full">
+              <span className="text-yellow-400 font-bold">
+                {selectedImage + 1}
+              </span>
+              <span className="text-gray-400"> / {filteredImages.length}</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* CTA Section */}
       <section className="py-20">
