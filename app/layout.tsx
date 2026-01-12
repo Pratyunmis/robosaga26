@@ -4,6 +4,7 @@ import "./globals.css";
 import AuthProvider from "@/provider/AuthProvider";
 import QueryProvider from "@/provider/QueryProvider";
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -120,6 +121,7 @@ export default function RootLayout({
           <QueryProvider>{children}</QueryProvider>
           <Toaster position="top-right" />
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   );
