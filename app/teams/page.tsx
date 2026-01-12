@@ -183,8 +183,9 @@ export default function TeamsPage() {
 
   if (loadingTeam) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center bg-black justify-center h-screen">
         <Spinner />
+        <span>Loading...</span>
       </div>
     );
   }

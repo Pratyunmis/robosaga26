@@ -279,11 +279,15 @@ export default function SponsorsPage() {
           >
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {[1, 2, 3, 4].map((i) => (
-                <Skeleton
-                  key={i}
-                  title="coming soon"
-                  className="aspect-video bg-gray-800 rounded-lg flex items-center justify-center border border-yellow-400/30"
-                />
+                <div key={i} className="group flex flex-col items-center gap-4">
+                  <div className="w-full aspect-video rounded-xl bg-gray-900/40 border border-dashed border-gray-800 flex items-center justify-center transition-all duration-300 group-hover:border-yellow-400/30 group-hover:bg-gray-900/60">
+                    <div className="w-10 h-10 rounded-full border border-gray-800 flex items-center justify-center group-hover:border-yellow-400/20 transition-colors">
+                      <span className="text-xl font-semibold text-gray-400 group-hover:text-yellow-400">
+                        coming soon
+                      </span>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </motion.div>
