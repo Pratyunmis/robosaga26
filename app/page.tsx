@@ -200,7 +200,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-black via-blue-950 to-black text-white">
+    <div className="min-h-screen bg-linear-to-b from-black via-blue-950 to-black text-white overflow-x-hidden">
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"

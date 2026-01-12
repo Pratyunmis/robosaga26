@@ -5,9 +5,14 @@ import {
   text,
   primaryKey,
   integer,
+  pgEnum,
 } from "drizzle-orm/pg-core"
 import type { AdapterAccountType } from "@auth/core/adapters"
  
+
+// Enums
+export const teamRoleEnum = pgEnum("team_role", ["leader", "member"]);
+export const joinRequestStatusEnum = pgEnum("join_request_status", ["pending", "accepted", "rejected"]);
 
  
 export const users = pgTable("user", {
@@ -19,9 +24,9 @@ export const users = pgTable("user", {
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
   role: text("role", { enum: ["admin", "user"] }).notNull().default("user"),
-  rollNo: text("rollNo").unique(),
+  rollNo: text("rollNo"),
   branch: text("branch"),
-  phoneNo: text("phoneNo").unique(),
+  phoneNo: text("phoneNo"),
   createdAt: timestamp("createdAt", { mode: "date" })
     .notNull()
     .defaultNow()
@@ -108,6 +113,9 @@ export const teams = pgTable(
     slug: text("slug").notNull().unique(),
     name: text("name").notNull(),
     score: integer("score").notNull().default(0),
+    leaderId: text("leaderId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
     createdAt: timestamp("createdAt", { mode: "date" })
       .notNull()
       .defaultNow(),
@@ -123,6 +131,10 @@ export const teamMembers = pgTable(
     userId: text("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
+    role: teamRoleEnum("role").notNull().default("member"),
+    joinedAt: timestamp("joinedAt", { mode: "date" })
+      .notNull()
+      .defaultNow(),
   },
   (teamMember) => [
     {
@@ -132,3 +144,64 @@ export const teamMembers = pgTable(
     }
   ]
 )
+
+// Join Requests Table - for leader approval workflow
+export const joinRequests = pgTable(
+  "join_request",
+  {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    teamId: text("teamId")
+      .notNull()
+      .references(() => teams.id, { onDelete: "cascade" }),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    status: joinRequestStatusEnum("status").notNull().default("pending"),
+    createdAt: timestamp("createdAt", { mode: "date" })
+      .notNull()
+      .defaultNow(),
+  }
+)
+
+// Events Table
+export const eventCategoryEnum = pgEnum("event_category", [
+  "hackathon",
+  "exhibition",
+  "competition",
+  "workshop",
+  "session",
+]);
+
+export const events = pgTable("event", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  description: text("description"),
+  category: eventCategoryEnum("category").notNull(),
+  date: text("date"), // e.g. "23 Jan, 7 PM - 24 Jan, 2 PM"
+  maxScore: integer("maxScore").notNull().default(100),
+  isActive: boolean("isActive").notNull().default(true),
+  createdAt: timestamp("createdAt", { mode: "date" })
+    .notNull()
+    .defaultNow(),
+});
+
+// Event Registrations Table - teams registered for events
+export const eventRegistrations = pgTable(
+  "event_registration",
+  {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    eventId: text("eventId")
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+    teamId: text("teamId")
+      .notNull()
+      .references(() => teams.id, { onDelete: "cascade" }),
+    score: integer("score").default(0),
+    rank: integer("rank"),
+    registeredAt: timestamp("registeredAt", { mode: "date" })
+      .notNull()
+      .defaultNow(),
+  }
+)
+

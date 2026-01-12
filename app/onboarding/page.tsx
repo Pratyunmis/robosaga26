@@ -319,7 +319,7 @@ export default function OnboardingPage() {
           {/* Footer text */}
           <div className="mt-8 text-center">
             <p className="text-blue-300 text-xs font-mono">
-              © 2025 Robolution,BIT Mesra. All rights reserved.
+              © 2026 Robolution,BIT Mesra. All rights reserved.
             </p>
             <div className="flex justify-center gap-2 mt-2">
               <span className="text-yellow-400 text-xl">●</span>

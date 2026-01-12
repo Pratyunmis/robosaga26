@@ -1,0 +1,221 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-geist-mono);
+
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar: hsl(var(--sidebar));
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-ring: hsl(var(--ring));
+  --color-input: hsl(var(--input));
+  --color-border: hsl(var(--border));
+  --color-destructive: hsl(var(--destructive));
+
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary: hsl(var(--primary));
+
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card: hsl(var(--card));
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+}
+
+:root {
+  /* RoboSaga Yellow-Blue Theme */
+  --background: 0 0% 100%;
+  --foreground: 224 10% 10%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 224 10% 10%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 224 10% 10%;
+
+  --primary: 48 96% 53%;
+  --primary-foreground: 0 0% 0%;
+
+  --secondary: 220 14% 96%;
+  --secondary-foreground: 224 10% 20%;
+
+  --muted: 220 14% 96%;
+  --muted-foreground: 220 9% 46%;
+
+  --accent: 48 96% 96%;
+  --accent-foreground: 48 55% 25%;
+
+  --destructive: 0 84% 60%;
+
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 48 96% 53%;
+
+  --chart-1: hsl(48, 96%, 53%);
+  --chart-2: hsl(210, 90%, 55%);
+  --chart-3: hsl(160, 70%, 42%);
+  --chart-4: hsl(40, 95%, 55%);
+  --chart-5: hsl(0, 84%, 60%);
+
+  --radius: 0.75rem;
+
+  --sidebar: 220 20% 98%;
+  --sidebar-foreground: 224 10% 20%;
+  --sidebar-primary: 48 96% 53%;
+  --sidebar-primary-foreground: 0 0% 0%;
+  --sidebar-accent: 48 96% 96%;
+  --sidebar-accent-foreground: 48 55% 25%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 48 96% 53%;
+
+  --app-bg: radial-gradient(
+      1200px 600px at 15% 0%,
+      hsl(48 96% 53% / 0.1),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at 85% 10%,
+      hsl(210 90% 55% / 0.08),
+      transparent 55%
+    );
+}
+
+.dark {
+  --background: 224 10% 6%;
+  --foreground: 210 40% 98%;
+
+  --card: 224 10% 9%;
+  --card-foreground: 210 40% 98%;
+
+  --popover: 224 10% 9%;
+  --popover-foreground: 210 40% 98%;
+
+  --primary: 48 96% 53%;
+  --primary-foreground: 0 0% 0%;
+
+  --secondary: 224 10% 14%;
+  --secondary-foreground: 210 40% 98%;
+
+  --muted: 224 10% 14%;
+  --muted-foreground: 215 20% 65%;
+
+  --accent: 48 35% 18%;
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 72% 51%;
+
+  --border: 224 10% 18%;
+  --input: 224 10% 18%;
+  --ring: 48 96% 53%;
+
+  --chart-1: hsl(48, 96%, 53%);
+  --chart-2: hsl(210, 90%, 60%);
+  --chart-3: hsl(160, 70%, 45%);
+  --chart-4: hsl(40, 95%, 60%);
+  --chart-5: hsl(0, 84%, 62%);
+
+  --sidebar: 224 10% 9%;
+  --sidebar-foreground: 210 40% 98%;
+  --sidebar-primary: 48 96% 53%;
+  --sidebar-primary-foreground: 0 0% 0%;
+  --sidebar-accent: 224 10% 14%;
+  --sidebar-accent-foreground: 210 40% 98%;
+  --sidebar-border: 224 10% 18%;
+  --sidebar-ring: 48 96% 53%;
+
+  --app-bg: radial-gradient(
+      1200px 600px at 15% 0%,
+      hsl(48 96% 53% / 0.12),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at 85% 10%,
+      hsl(210 90% 60% / 0.1),
+      transparent 55%
+    );
+}
+
+* {
+  font-family: var(--font-inter);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    overflow-y: scroll !important;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    min-height: 100vh;
+    position: relative;
+    width: 100%;
+    background-image: var(--app-bg);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.25);
+    color: hsl(var(--foreground));
+  }
+
+  :where(a) {
+    @apply text-primary underline-offset-4 hover:underline;
+  }
+
+  * {
+    scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--background));
+    scrollbar-width: thin;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+  *::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.35);
+    border-radius: 999px;
+    border: 2px solid hsl(var(--background));
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+}
+
+[data-radix-popper-content-wrapper] {
+  position: fixed !important;
+}

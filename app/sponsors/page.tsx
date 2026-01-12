@@ -12,6 +12,7 @@ import {
   Lightbulb,
   type LucideIcon,
 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SponsorsPage() {
   const sponsorshipTiers = [
@@ -128,8 +129,8 @@ export default function SponsorsPage() {
             transition={{ delay: 0.2 }}
             className="text-xl text-gray-300 max-w-3xl mx-auto mb-8"
           >
-            Partner with RoboSaga '26 and showcase your brand to thousands of
-            aspiring engineers and tech enthusiasts
+            Partner with RoboSaga&lsquo;26 and showcase your brand to thousands
+            of aspiring engineers and tech enthusiasts
           </motion.p>
         </div>
       </section>
@@ -278,12 +279,11 @@ export default function SponsorsPage() {
           >
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {[1, 2, 3, 4].map((i) => (
-                <div
+                <Skeleton
                   key={i}
+                  title="coming soon"
                   className="aspect-video bg-gray-800 rounded-lg flex items-center justify-center border border-yellow-400/30"
-                >
-                  <span className="text-gray-600">Sponsor Logo {i}</span>
-                </div>
+                />
               ))}
             </div>
           </motion.div>

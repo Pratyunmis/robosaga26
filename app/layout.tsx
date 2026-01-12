@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
-import { Orbitron, Rajdhani, Space_Mono } from "next/font/google";
+import { Inter, Orbitron, Rajdhani, Space_Mono } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/provider/AuthProvider";
 import QueryProvider from "@/provider/QueryProvider";
 import { Toaster } from "@/components/ui/sonner";
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
 
 const orbitron = Orbitron({
   variable: "--font-orbitron",
@@ -107,9 +112,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${orbitron.variable} ${rajdhani.variable} ${spaceMono.variable} antialiased isolate`}
+        className={`${inter.variable} ${orbitron.variable} ${rajdhani.variable} ${spaceMono.variable} antialiased isolate`}
       >
         <AuthProvider>
           <QueryProvider>{children}</QueryProvider>

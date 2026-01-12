@@ -87,6 +87,7 @@ export async function createTeam(formData: FormData) {
     .values({
       name: teamName,
       slug: slug,
+      leaderId: session.user.id,
     })
     .returning();
 
