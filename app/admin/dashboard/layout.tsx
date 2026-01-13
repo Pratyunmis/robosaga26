@@ -30,7 +30,7 @@ async function LayoutContent({ children }: { children: ReactNode }) {
     redirect("/api/auth/signin?callbackUrl=/admin/dashboard");
   }
 
-  if (currentUser.role !== "admin") {
+  if (currentUser.role !== "admin" && currentUser.role !== "moderator") {
     redirect("/");
   }
 
