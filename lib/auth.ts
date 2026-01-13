@@ -41,7 +41,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // Allow all users to sign in
       return true;
     },
-    async jwt({ token, user, trigger }) {
+    async jwt({ token, user, trigger, session }) {
       // Initial sign in - fetch user data from database
       if (user) {
         const dbUser = await db
@@ -68,19 +68,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       
       // Update session (when update() is called)
-      if (trigger === "update" && token.id) {
-        const dbUser = await db
-          .select()
-          .from(users)
-          .where(eq(users.id, token.id as string))
-          .limit(1);
-        
-        if (dbUser.length > 0) {
-          token.role = dbUser[0].role;
-          token.rollNo = dbUser[0].rollNo;
-          token.phoneNo = dbUser[0].phoneNo;
-          token.branch = dbUser[0].branch;
-          token.joinedAt = dbUser[0].createdAt;
+      if (trigger === "update") {
+        // Optimistically update token from session data if provided
+        if (session?.user) {
+          if (session.user.rollNo) token.rollNo = session.user.rollNo;
+          if (session.user.branch) token.branch = session.user.branch;
+          if (session.user.phoneNo) token.phoneNo = session.user.phoneNo;
+        }
+
+        // Also sync with DB to be sure
+        if (token.id || token.sub) {
+          const userId = (token.id || token.sub) as string;
+          const dbUser = await db
+            .select()
+            .from(users)
+            .where(eq(users.id, userId))
+            .limit(1);
+
+          if (dbUser.length > 0) {
+            token.id = dbUser[0].id;
+            token.role = dbUser[0].role;
+            // Only overwrite if DB has values (priority to DB) changes
+             token.rollNo = dbUser[0].rollNo;
+             token.branch = dbUser[0].branch;
+             token.phoneNo = dbUser[0].phoneNo;
+             token.joinedAt = dbUser[0].createdAt;
+          }
         }
       }
       

@@ -8,7 +8,7 @@ export type CurrentUser = {
   email: string;
   name: string;
   avatar: string;
-  role: "admin" | "user";
+  role: "admin" | "moderator" | "user";
   rollNo: string | null;
   branch: string | null;
 } | null;
@@ -35,7 +35,7 @@ export async function getCurrentUser(): Promise<CurrentUser> {
     email: user.email || "",
     name: user.name || user.email?.split("@")[0] || "User",
     avatar: user.image || "",
-    role: user.role as "admin" | "user",
+    role: user.role as "admin" | "moderator" | "user",
     rollNo: user.rollNo,
     branch: user.branch,
   };
@@ -48,8 +48,8 @@ export async function requireAdmin() {
     throw new Error("Unauthorized - Please log in");
   }
 
-  if (user.role !== "admin") {
-    throw new Error(`Access denied. Required role: admin. Current role: ${user.role}`);
+  if (user.role == "user") {
+    throw new Error(`Access denied. Required role: admin or moderator. Current role: ${user.role}`);
   }
 
   return user;
