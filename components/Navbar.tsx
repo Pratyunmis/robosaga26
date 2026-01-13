@@ -40,7 +40,7 @@ export default function Navbar() {
     { href: "/leaderboard", label: "Leaderboard" },
     { href: "/hackaway", label: "Hackaway" },
     { href: "/sponsors", label: "Sponsors" },
-    { href: "/teams", label: "Teams" },
+    { href: "/team", label: "Team" },
     { href: "/contact", label: "Contact" },
   ];
 
