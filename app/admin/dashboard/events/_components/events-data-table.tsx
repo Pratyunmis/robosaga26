@@ -25,9 +25,13 @@ import {
   Wrench,
   Mic,
   MoreHorizontal,
+  Plus,
+  Trash,
+  Edit,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import Link from "next/link";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +39,8 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -47,6 +53,8 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EventFormDialog } from "./event-form-dialog";
+import { deleteEvent } from "@/lib/admin/actions";
 
 export type Event = {
   id: string;
@@ -54,7 +62,8 @@ export type Event = {
   slug: string;
   description: string | null;
   category: "hackathon" | "exhibition" | "competition" | "workshop" | "session";
-  date: string | null;
+  startTime: Date | string | null;
+  endTime: Date | string | null;
   maxScore: number;
   isActive: boolean;
 };
@@ -75,121 +84,18 @@ const categoryColors: Record<string, string> = {
   session: "bg-orange-500/10 text-orange-500 border-orange-500/30",
 };
 
-export const columns: ColumnDef<Event>[] = [
-  {
-    accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Event Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("name")}</div>
-    ),
-  },
-  {
-    accessorKey: "category",
-    header: "Category",
-    cell: ({ row }) => {
-      const category = row.getValue("category") as string;
-      const colorClass =
-        categoryColors[category] ||
-        "bg-gray-500/10 text-gray-500 border-gray-500/30";
-      return (
-        <Badge variant="outline" className={`capitalize ${colorClass}`}>
-          {category}
-        </Badge>
-      );
-    },
-  },
-  {
-    accessorKey: "date",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Date
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      return (
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Calendar className="h-4 w-4" />
-          <span>{row.getValue("date")}</span>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "maxScore",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Max Score
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="text-center">
-        <Badge variant="secondary">{row.getValue("maxScore")}</Badge>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "description",
-    header: "Description",
-    cell: ({ row }) => (
-      <div className="truncate max-w-[300px] text-muted-foreground">
-        {row.getValue("description")}
-      </div>
-    ),
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const event = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <Link
-              className="flex text-center cursor-pointer justify-center no-underline"
-              href={`/admin/dashboard/events/${event.id}`}
-            >
-              <DropdownMenuCheckboxItem>View Details</DropdownMenuCheckboxItem>
-            </Link>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
+const formatDate = (date: Date | string | null) => {
+  if (!date) return "TBD";
+  return new Date(date).toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
+};
 
-interface EventsDataTableProps {
-  events: Event[];
-}
-
-export function EventsDataTable({ events }: EventsDataTableProps) {
-  "use no memo"; 
+export function EventsDataTable({ events }: { events: Event[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -199,7 +105,140 @@ export function EventsDataTable({ events }: EventsDataTableProps) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [globalFilter, setGlobalFilter] = React.useState("");
 
-  // eslint-disable-next-line react-hooks/incompatible-library
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [editingEvent, setEditingEvent] = React.useState<Event | undefined>(
+    undefined
+  );
+
+  const handleDelete = async (id: string) => {
+    if (
+      confirm(
+        "Are you sure you want to delete this event? This action cannot be undone."
+      )
+    ) {
+      const res = await deleteEvent(id);
+      if (res.success) {
+        toast.success("Event deleted successfully");
+      } else {
+        toast.error("Failed to delete event");
+      }
+    }
+  };
+
+  const openCreateDialog = () => {
+    setEditingEvent(undefined);
+    setDialogOpen(true);
+  };
+
+  const openEditDialog = (event: Event) => {
+    setEditingEvent(event);
+    setDialogOpen(true);
+  };
+
+  const columns: ColumnDef<Event>[] = [
+    {
+      accessorKey: "name",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Event Name
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="font-medium">{row.getValue("name")}</div>
+      ),
+    },
+    {
+      accessorKey: "category",
+      header: "Category",
+      cell: ({ row }) => {
+        const category = row.getValue("category") as string;
+        const colorClass =
+          categoryColors[category] ||
+          "bg-gray-500/10 text-gray-500 border-gray-500/30";
+        return (
+          <Badge variant="outline" className={`capitalize ${colorClass}`}>
+            {category}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: "startTime",
+      header: "Start Time",
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center gap-2 text-muted-foreground text-sm">
+            <Calendar className="h-3 w-3" />
+            <span>{formatDate(row.getValue("startTime"))}</span>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "endTime",
+      header: "End Time",
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center gap-2 text-muted-foreground text-sm">
+            <Calendar className="h-3 w-3" />
+            <span>{formatDate(row.getValue("endTime"))}</span>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "maxScore",
+      header: "Max Score",
+      cell: ({ row }) => (
+        <div className="text-center">
+          <Badge variant="secondary">{row.getValue("maxScore")}</Badge>
+        </div>
+      ),
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const event = row.original;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <Link
+                className="flex text-center cursor-pointer justify-center no-underline"
+                href={`/admin/dashboard/events/${event.id}`}
+              >
+                <DropdownMenuItem className="w-full cursor-pointer">
+                  View Details
+                </DropdownMenuItem>
+              </Link>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => openEditDialog(event)}>
+                <Edit className="mr-2 h-4 w-4" /> Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-red-600 focus:text-red-600"
+                onClick={() => handleDelete(event.id)}
+              >
+                <Trash className="mr-2 h-4 w-4" /> Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
+
   const table = useReactTable({
     data: events,
     columns,
@@ -226,7 +265,8 @@ export function EventsDataTable({ events }: EventsDataTableProps) {
       "Event Name": event.name,
       Slug: event.slug,
       Category: event.category,
-      Date: event.date,
+      Start: formatDate(event.startTime),
+      End: formatDate(event.endTime),
       "Max Score": event.maxScore,
       Description: event.description,
     }));
@@ -239,6 +279,12 @@ export function EventsDataTable({ events }: EventsDataTableProps) {
 
   return (
     <div className="w-full space-y-6">
+      <EventFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        event={editingEvent}
+      />
+
       {/* Event Cards Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-8">
         {events.map((event) => {
@@ -248,12 +294,14 @@ export function EventsDataTable({ events }: EventsDataTableProps) {
             "bg-gray-500/10 text-gray-500 border-gray-500/30";
 
           return (
-            <Link
+            <Card
               key={event.id}
-              href={`/admin/dashboard/events/${event.id}`}
-              className="block no-underline"
+              className="hover:shadow-lg transition-shadow h-full flex flex-col"
             >
-              <Card className="hover:shadow-lg transition-shadow h-full cursor-pointer">
+              <Link
+                href={`/admin/dashboard/events/${event.id}`}
+                className="block no-underline flex-1"
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
@@ -280,15 +328,43 @@ export function EventsDataTable({ events }: EventsDataTableProps) {
                   <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                     {event.description}
                   </p>
-                  <div className="flex items-center gap-4 text-sm mt-auto">
-                    <div className="flex items-center gap-1.5 text-muted-foreground">
-                      <Calendar className="h-4 w-4" />
-                      <span>{event.date}</span>
+                  <div className="flex flex-col gap-1 text-sm mt-auto text-muted-foreground">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold">Start:</span>
+                      <span>{formatDate(event.startTime)}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold">End:</span>
+                      <span>{formatDate(event.endTime)}</span>
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-            </Link>
+              </Link>
+              <div className="p-4 flex justify-end gap-2 border-t mt-auto">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openEditDialog(event);
+                  }}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-red-500 hover:text-red-600"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(event.id);
+                  }}
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
+            </Card>
           );
         })}
       </div>
@@ -306,6 +382,9 @@ export function EventsDataTable({ events }: EventsDataTableProps) {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button onClick={openCreateDialog}>
+            <Plus className="mr-2 h-4 w-4" /> Add Event
+          </Button>
           <Button variant="outline" onClick={handleExport}>
             <Download className="mr-2 h-4 w-4" />
             Export

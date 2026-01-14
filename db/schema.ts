@@ -178,7 +178,8 @@ export const events = pgTable("event", {
   slug: text("slug").notNull().unique(),
   description: text("description"),
   category: eventCategoryEnum("category").notNull(),
-  date: text("date"), // e.g. "23 Jan, 7 PM - 24 Jan, 2 PM"
+  startTime: timestamp("startTime", { mode: "date", withTimezone: true }),
+  endTime: timestamp("endTime", { mode: "date", withTimezone: true }),
   maxScore: integer("maxScore").notNull().default(100),
   isActive: boolean("isActive").notNull().default(true),
   createdAt: timestamp("createdAt", { mode: "date" })

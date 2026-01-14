@@ -98,7 +98,8 @@ export async function getEvents() {
       name: events.name,
       slug: events.slug,
       description: events.description,
-      date: events.date,
+      startTime: events.startTime,
+      endTime: events.endTime,
     })
     .from(events)
     .where(eq(events.isActive, true));

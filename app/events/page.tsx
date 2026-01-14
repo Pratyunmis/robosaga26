@@ -6,7 +6,8 @@ export default async function EventsPage() {
     name: string;
     slug: string;
     description: string | null;
-    date: string | null;
+    startTime: Date | null;
+    endTime: Date | null;
   }[] = [];
 
   return <EventsClient dbEvents={allEvents} />;

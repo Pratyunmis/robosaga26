@@ -42,7 +42,7 @@ async function EventDetailsContent({ eventId }: { eventId: string }) {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
         <Card>
           <CardHeader>
             <CardDescription>Category</CardDescription>
@@ -59,6 +59,40 @@ async function EventDetailsContent({ eventId }: { eventId: string }) {
           <CardHeader>
             <CardDescription>Total Registrations</CardDescription>
             <CardTitle>{registrations.length}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardDescription>Start Time</CardDescription>
+            <CardTitle className="text-lg">
+              {event.startTime
+                ? new Date(event.startTime).toLocaleString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                    hour12: true,
+                  })
+                : "TBD"}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardDescription>End Time</CardDescription>
+            <CardTitle className="text-lg">
+              {event.endTime
+                ? new Date(event.endTime).toLocaleString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                    hour12: true,
+                  })
+                : "TBD"}
+            </CardTitle>
           </CardHeader>
         </Card>
       </div>

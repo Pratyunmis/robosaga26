@@ -117,7 +117,8 @@ type DbEvent = {
   name: string;
   slug: string;
   description: string | null;
-  date: string | null;
+  startTime: Date | null;
+  endTime: Date | null;
 };
 
 interface EventsClientProps {
@@ -127,6 +128,7 @@ interface EventsClientProps {
 export default function EventsClient({ dbEvents }: EventsClientProps) {
   const [registeredEvents, setRegisteredEvents] = useState<string[]>([]);
   const [fetchedEvents, setFetchedEvents] = useState<DbEvent[]>([]);
+  // ... (rest of simple state)
   const [loadingEvents, setLoadingEvents] = useState<Record<string, boolean>>(
     {}
   );
@@ -147,10 +149,6 @@ export default function EventsClient({ dbEvents }: EventsClientProps) {
     fetchRegistrations();
   }, []);
 
-  // Use fetched events if available, otherwise use initial props
-  // But wait, initial props are [] now. So we must rely on fetched events or fallback to skeleton?
-  // We need to store fetched events in state.
-
   const eventsList = fetchedEvents.length > 0 ? fetchedEvents : dbEvents;
 
   // Merge DB data with static metadata
@@ -158,12 +156,20 @@ export default function EventsClient({ dbEvents }: EventsClientProps) {
     .map((e) => {
       const metadata = EVENT_METADATA[e.slug];
       if (!metadata) return null;
+
+      const formattedDate = e.startTime
+        ? new Date(e.startTime).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          })
+        : metadata.day; // Fallback to Day 1/2/3 if no date
+
       return {
         id: e.slug, // Use slug as ID for frontend logic and registration
         dbId: e.id,
         title: metadata.displayTitle || e.name,
         description: e.description || "",
-        date: e.date || "TBA",
+        date: formattedDate,
         ...metadata,
       };
     })
