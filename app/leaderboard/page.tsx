@@ -38,7 +38,7 @@ export default function LeaderboardPage() {
     return (
       <div className="min-h-screen bg-linear-to-b from-black via-blue-950 to-black text-white">
         <Navbar />
-        <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-400 mb-4"></div>
             <p className="text-xl text-gray-300">Loading leaderboard...</p>
@@ -54,7 +54,7 @@ export default function LeaderboardPage() {
     return (
       <div className="min-h-screen bg-linear-to-b from-black via-blue-950 to-black text-white">
         <Navbar />
-        <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <p className="text-xl text-red-400 mb-4">
               Failed to load leaderboard
@@ -72,7 +72,7 @@ export default function LeaderboardPage() {
     return (
       <div className="min-h-screen bg-linear-to-b from-black via-blue-950 to-black text-white">
         <Navbar />
-        <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <Trophy className="w-16 h-16 mx-auto text-yellow-400 mb-4" />
             <p className="text-xl text-gray-300">No teams registered yet</p>

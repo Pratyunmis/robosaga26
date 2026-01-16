@@ -191,7 +191,7 @@ export default function Home() {
     },
     offers: {
       "@type": "Offer",
-      url: "https://www.robosaga.robolutionbitm.in/teams",
+      url: "https://www.robosaga.robolutionbitm.in/team",
       availability: "https://schema.org/InStock",
       priceCurrency: "INR",
       price: "0",
@@ -304,7 +304,7 @@ export default function Home() {
                   Explore Events
                 </Button>
               </Link>
-              <Link href="/teams" className="w-full sm:w-auto">
+              <Link href="/team" className="w-full sm:w-auto">
                 <Button
                   variant="outline"
                   className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 w-full sm:w-auto border-yellow-400 text-gray-900 hover:bg-yellow-400 hover:text-black"
@@ -649,7 +649,7 @@ export default function Home() {
               excellence!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/teams">
+              <Link href="/team">
                 <button className="bg-black text-yellow-400 px-8 py-4 rounded-full font-bold hover:bg-gray-900 transition-colors text-lg">
                   Register Now
                 </button>

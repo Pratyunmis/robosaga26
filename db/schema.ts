@@ -206,3 +206,18 @@ export const eventRegistrations = pgTable(
   }
 )
 
+
+// Contact Submissions Table
+export const contactSubmissions = pgTable(
+  "contact_submission",
+  {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    subject: text("subject").notNull(),
+    message: text("message").notNull(),
+    createdAt: timestamp("createdAt", { mode: "date" })
+      .notNull()
+      .defaultNow(),
+  }
+)

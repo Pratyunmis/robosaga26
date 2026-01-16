@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 import {
   Mail,
   Phone,
@@ -30,14 +32,18 @@ export default function ContactPage() {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate form submission
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      await axios.post("/api/contact", formData);
       setSubmitted(true);
       setFormData({ name: "", email: "", subject: "", message: "" });
-
+      toast.success("Message sent successfully!");
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setLoading(false);
       setTimeout(() => setSubmitted(false), 5000);
-    }, 1000);
+    }
   };
 
   const contactInfo: Array<{

@@ -323,7 +323,7 @@ export default function HackAwayPage() {
             <p className="text-black/80 text-lg mb-8">
               Register your team now and showcase your innovation at HackAway!
             </p>
-            <Link href="/teams">
+            <Link href="/team">
               <Button className="bg-black text-yellow-400 px-8 py-4 rounded-full font-bold hover:bg-gray-900 transition-colors text-lg">
                 Register Team
               </Button>

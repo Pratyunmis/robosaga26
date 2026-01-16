@@ -256,7 +256,7 @@ export default function ProfilePage() {
                         </p>
                         <Button
                           className="bg-yellow-400 text-black hover:bg-yellow-500 font-bold px-8"
-                          onClick={() => router.push("/teams")}
+                          onClick={() => router.push("/team")}
                         >
                           Go to Teams
                         </Button>

@@ -5,6 +5,7 @@ import {
   Trophy,
   Calendar,
   ClipboardList,
+  MessageSquare,
 } from "lucide-react";
 
 export interface NavSubItem {
@@ -68,6 +69,11 @@ export const sidebarItems: NavGroup[] = [
         title: "Users",
         url: "/admin/dashboard/users",
         icon: Users,
+      },
+      {
+        title: "Messages",
+        url: "/admin/dashboard/messages",
+        icon: MessageSquare,
       },
     ],
   },

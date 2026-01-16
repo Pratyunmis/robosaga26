@@ -229,20 +229,23 @@ export default function TeamsPage() {
 
   if (loadingTeam) {
     return (
-      <div className="min-h-screen bg-linear-to-b from-black via-blue-950 to-black flex flex-col items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex flex-col items-center gap-6"
-        >
-          <div className="relative flex items-center justify-center">
-            <Spinner className="w-12 h-12 text-yellow-400" />
-            <div className="absolute inset-0 rounded-full border-2 border-yellow-400/20 animate-ping" />
-          </div>
-          <p className="text-yellow-400 font-mono text-sm tracking-[0.3em] animate-pulse">
-            LOADING TEAM DATA
-          </p>
-        </motion.div>
+      <div className="min-h-screen bg-linear-to-b from-black via-blue-950 to-black text-white antialiased">
+        <Navbar />
+        <div className="min-h-screen flex flex-col items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col items-center gap-6"
+          >
+            <div className="relative flex items-center justify-center">
+              <Spinner className="w-12 h-12 text-yellow-400" />
+              <div className="absolute inset-0 rounded-full border-2 border-yellow-400/20 animate-ping" />
+            </div>
+            <p className="text-yellow-400 font-mono text-sm tracking-[0.3em] animate-pulse">
+              LOADING TEAM DATA
+            </p>
+          </motion.div>
+        </div>
       </div>
     );
   }
