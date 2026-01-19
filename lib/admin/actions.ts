@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { events } from "@/db/schema";
+import { events, problemStatementSettings, hackAwayRegistrations } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -71,5 +71,132 @@ export async function deleteEvent(id: string) {
   } catch (error) {
     console.error("Failed to delete event:", error);
     return { success: false, error: "Failed to delete event" };
+  }
+}
+
+// Problem statement titles for reference
+const PS_TITLES: Record<number, string> = {
+  1: "Glove-Controlled Drift Racer",
+  2: "Smart Attendance System",
+  3: "Relief Supply Chain",
+  4: "Smart Safety Monitor",
+  5: "Line Follower Robot",
+  6: "Drowsiness Detection",
+  7: "Logistics Partner",
+  8: "SuperSense",
+  9: "Drip-Sync",
+  10: "Pothole Patrol",
+  11: "The Omni-Wheel Scout",
+  12: "Watt-Watch",
+};
+
+export async function updateProblemStatementMaxParticipants(
+  problemStatementId: number, 
+  maxParticipants: number
+) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== "admin") {
+      return { success: false, error: "Unauthorized: Only admins can update max participants" };
+    }
+
+    if (problemStatementId < 1 || problemStatementId > 12) {
+      return { success: false, error: "Invalid problem statement ID" };
+    }
+
+    if (maxParticipants < 1 || maxParticipants > 100) {
+      return { success: false, error: "Max participants must be between 1 and 100" };
+    }
+
+    // Try to update or insert - we use raw SQL to handle potential table absence
+    try {
+      // First try to check if record exists
+      let existing = null;
+      try {
+        existing = await db.query.problemStatementSettings.findFirst({
+          where: eq(problemStatementSettings.id, problemStatementId),
+        });
+      } catch {
+        // Table might not exist, we'll create the record
+      }
+
+      if (existing) {
+        // Update existing
+        await db
+          .update(problemStatementSettings)
+          .set({ 
+            maxParticipants, 
+            updatedAt: new Date() 
+          })
+          .where(eq(problemStatementSettings.id, problemStatementId));
+      } else {
+        // Insert new
+        await db.insert(problemStatementSettings).values({
+          id: problemStatementId,
+          title: PS_TITLES[problemStatementId] || `Problem Statement ${problemStatementId}`,
+          maxParticipants,
+          isActive: true,
+          updatedAt: new Date(),
+        });
+      }
+
+      revalidatePath("/admin/dashboard/hackaway");
+      revalidatePath("/hackaway");
+      return { success: true };
+    } catch (dbError) {
+      console.error("Database error:", dbError);
+      return { success: false, error: "Database table not available. Please run migrations first." };
+    }
+  } catch (error) {
+    console.error("Failed to update max participants:", error);
+    return { success: false, error: "Failed to update max participants" };
+  }
+}
+
+// Update HackAway registration (rank, isQualified, pptLink)
+export async function updateHackawayRegistration(
+  registrationId: string,
+  data: {
+    rank?: number | null;
+    isQualified?: boolean;
+    pptLink?: string | null;
+  }
+) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || (user.role !== "admin" && user.role !== "moderator")) {
+      return { success: false, error: "Unauthorized: Only admins can update registrations" };
+    }
+
+    // Validate rank if provided
+    if (data.rank !== undefined && data.rank !== null) {
+      if (data.rank < 1 || data.rank > 100) {
+        return { success: false, error: "Rank must be between 1 and 100" };
+      }
+    }
+
+    // Validate pptLink if provided
+    if (data.pptLink !== undefined && data.pptLink !== null && data.pptLink !== "") {
+      try {
+        new URL(data.pptLink);
+      } catch {
+        return { success: false, error: "Invalid PPT link URL" };
+      }
+    }
+
+    await db
+      .update(hackAwayRegistrations)
+      .set({
+        ...(data.rank !== undefined && { rank: data.rank }),
+        ...(data.isQualified !== undefined && { isQualified: data.isQualified }),
+        ...(data.pptLink !== undefined && { pptLink: data.pptLink || null }),
+      })
+      .where(eq(hackAwayRegistrations.id, registrationId));
+
+    revalidatePath("/admin/dashboard/hackaway");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update hackaway registration:", error);
+    return { success: false, error: "Failed to update registration" };
   }
 }

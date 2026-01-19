@@ -221,3 +221,37 @@ export const contactSubmissions = pgTable(
       .defaultNow(),
   }
 )
+
+//hackAwayRegistrations Table
+export const hackAwayRegistrations = pgTable(
+  "hackaway_registration",
+  {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    teamId: text("teamId")
+      .notNull()
+      .unique() // Each team can only register once
+      .references(() => teams.id, { onDelete: "cascade" }),
+    problemStatementNo: integer("problemStatementNo").notNull(),
+    rank: integer("rank"),
+    isQualified: boolean("isQualified").default(false),
+    pptLink: text("pptLink"),
+    registeredAt: timestamp("registeredAt", { mode: "date" })
+      .notNull()
+      .defaultNow(),
+  }
+)
+
+// Problem Statement Settings Table (for admin to set max participants)
+export const problemStatementSettings = pgTable(
+  "problem_statement_settings",
+  {
+    id: integer("id").primaryKey(), // Problem statement number (1-12)
+    title: text("title").notNull(),
+    maxParticipants: integer("maxParticipants").notNull().default(10),
+    isActive: boolean("isActive").notNull().default(true),
+    updatedAt: timestamp("updatedAt", { mode: "date" })
+      .notNull()
+      .defaultNow(),
+  }
+)
+

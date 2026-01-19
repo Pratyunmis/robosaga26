@@ -6,6 +6,7 @@ import {
   Calendar,
   ClipboardList,
   MessageSquare,
+  Laptop,
 } from "lucide-react";
 
 export interface NavSubItem {
@@ -58,6 +59,12 @@ export const sidebarItems: NavGroup[] = [
         title: "Registrations",
         url: "/admin/dashboard/registrations",
         icon: ClipboardList,
+        isNew: true,
+      },
+      {
+        title: "HackAway",
+        url: "/admin/dashboard/hackaway",
+        icon: Laptop,
         isNew: true,
       },
       {

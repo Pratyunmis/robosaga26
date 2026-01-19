@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { teams, teamMembers, users, joinRequests, events, eventRegistrations } from "@/db/schema";
+import { teams, teamMembers, users, joinRequests, events, eventRegistrations, hackAwayRegistrations, problemStatementSettings } from "@/db/schema";
 import { count, desc, sql, eq } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 
@@ -294,3 +294,136 @@ export async function getAnalyticsData() {
     },
   };
 }
+
+// Get all HackAway registrations with team and member details
+export async function getAllHackawayRegistrations() {
+  "use cache"
+
+  cacheLife('minutes')
+  cacheTag("hackaway-registrations")
+  
+  const registrations = await db
+    .select({
+      id: hackAwayRegistrations.id,
+      teamId: hackAwayRegistrations.teamId,
+      problemStatementNo: hackAwayRegistrations.problemStatementNo,
+      rank: hackAwayRegistrations.rank,
+      isQualified: hackAwayRegistrations.isQualified,
+      pptLink: hackAwayRegistrations.pptLink,
+      registeredAt: hackAwayRegistrations.registeredAt,
+      teamName: teams.name,
+      teamSlug: teams.slug,
+      teamScore: teams.score,
+      leaderId: teams.leaderId,
+    })
+    .from(hackAwayRegistrations)
+    .innerJoin(teams, eq(hackAwayRegistrations.teamId, teams.id))
+    .orderBy(desc(hackAwayRegistrations.registeredAt));
+
+  // Get team members for each registration
+  const registrationsWithMembers = await Promise.all(
+    registrations.map(async (reg) => {
+      const members = await db
+        .select({
+          userId: users.id,
+          name: users.name,
+          email: users.email,
+          image: users.image,
+          role: teamMembers.role,
+        })
+        .from(teamMembers)
+        .innerJoin(users, eq(teamMembers.userId, users.id))
+        .where(eq(teamMembers.teamId, reg.teamId));
+
+      return {
+        ...reg,
+        members,
+      };
+    })
+  );
+
+  return registrationsWithMembers;
+}
+
+// Get HackAway registration stats by problem statement
+export async function getHackawayStats() {
+  "use cache"
+  cacheLife('minutes')
+  cacheTag("hackaway-registrations")
+
+  const [totalRegistrations] = await db
+    .select({ count: count() })
+    .from(hackAwayRegistrations);
+
+  const statsByProblem = await db
+    .select({
+      problemStatementNo: hackAwayRegistrations.problemStatementNo,
+      count: count(),
+    })
+    .from(hackAwayRegistrations)
+    .groupBy(hackAwayRegistrations.problemStatementNo)
+    .orderBy(hackAwayRegistrations.problemStatementNo);
+
+  return {
+    total: totalRegistrations.count,
+    byProblemStatement: statsByProblem,
+  };
+}
+
+// Default problem statements
+const DEFAULT_PROBLEM_STATEMENTS = [
+  { id: 1, title: "Glove-Controlled Drift Racer", maxParticipants: 10 },
+  { id: 2, title: "Smart Attendance System", maxParticipants: 10 },
+  { id: 3, title: "Relief Supply Chain", maxParticipants: 10 },
+  { id: 4, title: "Smart Safety Monitor", maxParticipants: 10 },
+  { id: 5, title: "Line Follower Robot", maxParticipants: 10 },
+  { id: 6, title: "Drowsiness Detection", maxParticipants: 10 },
+  { id: 7, title: "Logistics Partner", maxParticipants: 10 },
+  { id: 8, title: "SuperSense", maxParticipants: 10 },
+  { id: 9, title: "Drip-Sync", maxParticipants: 10 },
+  { id: 10, title: "Pothole Patrol", maxParticipants: 10 },
+  { id: 11, title: "The Omni-Wheel Scout", maxParticipants: 10 },
+  { id: 12, title: "Watt-Watch", maxParticipants: 10 },
+];
+
+// Get problem statement settings with registration counts
+export async function getProblemStatementSettingsAdmin() {
+  "use cache"
+  cacheLife('minutes')
+  cacheTag("problem-statement-settings")
+
+  // Try to get settings from DB, fallback to empty if table doesn't exist
+  let settings: { id: number; title: string; maxParticipants: number; isActive: boolean }[] = [];
+  try {
+    settings = await db.select().from(problemStatementSettings);
+  } catch {
+    // Table might not exist yet, use defaults
+    console.log("problem_statement_settings table not found, using defaults");
+  }
+  const settingsMap = new Map(settings.map(s => [s.id, s]));
+
+  // Get registration counts
+  const regCounts = await db
+    .select({
+      problemStatementNo: hackAwayRegistrations.problemStatementNo,
+      count: count(),
+    })
+    .from(hackAwayRegistrations)
+    .groupBy(hackAwayRegistrations.problemStatementNo);
+
+  const countsMap = new Map(regCounts.map(r => [r.problemStatementNo, r.count]));
+
+  return DEFAULT_PROBLEM_STATEMENTS.map(ps => {
+    const existing = settingsMap.get(ps.id);
+    const regCount = countsMap.get(ps.id) || 0;
+    return {
+      id: ps.id,
+      title: existing?.title || ps.title,
+      maxParticipants: existing?.maxParticipants ?? ps.maxParticipants,
+      isActive: existing?.isActive ?? true,
+      registeredCount: regCount,
+      isFull: regCount >= (existing?.maxParticipants ?? ps.maxParticipants),
+    };
+  });
+}
+
