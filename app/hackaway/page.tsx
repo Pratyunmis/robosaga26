@@ -47,8 +47,13 @@ import {
   getHackawayRegistrationStats,
   checkHackawayRegistration,
 } from "./actions";
+import {config} from "@/lib/config";
+import HackathonMaintenancePage from "@/components/HackathonMaintenancePage";
 
 export default function HackAwayPage() {
+  if (config.hackaway.showMaintenance) {
+    return <HackathonMaintenancePage />;
+  }
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
