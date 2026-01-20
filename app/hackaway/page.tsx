@@ -53,9 +53,6 @@ import { config } from "@/lib/config";
 import HackathonMaintenancePage from "@/components/HackathonMaintenancePage";
 
 export default function HackAwayPage() {
-  if (config.hackaway.showMaintenance) {
-    return <HackathonMaintenancePage />;
-  }
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -380,6 +377,10 @@ export default function HackAwayPage() {
     const ps = problemStatements.find((p) => p.no === no);
     return ps ? ps.title : `Problem Statement #${no}`;
   };
+
+  if (config.hackaway.showMaintenance) {
+    return <HackathonMaintenancePage />;
+  }
 
   return (
     <div className="min-h-screen bg-linear-to-b from-black via-blue-950 to-black text-white">
