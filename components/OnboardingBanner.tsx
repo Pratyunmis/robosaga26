@@ -3,9 +3,13 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function OnboardingBanner() {
+  const pathname = usePathname();
   const { data: session } = useSession();
+
+  if (pathname.startsWith("/onboarding")) return null;
 
   if (!session?.user) return null;
 
