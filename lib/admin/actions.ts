@@ -76,18 +76,16 @@ export async function deleteEvent(id: string) {
 
 // Problem statement titles for reference
 const PS_TITLES: Record<number, string> = {
-  1: "Glove-Controlled Drift Racer",
-  2: "Smart Attendance System",
-  3: "Relief Supply Chain",
-  4: "Smart Safety Monitor",
-  5: "Line Follower Robot",
-  6: "Drowsiness Detection",
-  7: "Logistics Partner",
-  8: "SuperSense",
-  9: "Drip-Sync",
-  10: "Pothole Patrol",
-  11: "The Omni-Wheel Scout",
-  12: "Watt-Watch",
+  1: "The Reviewer Who Never Sleeps",
+  2: "Seeing the World with One Sensor",
+  3: "Finding the Way, One Step at a Time",
+  4: "Glove-Controlled Drift Racer",
+  5: "Drip-Sync: No More Guesswork!",
+  6: "TrekBot – A Simple Quadruped Walking Robot",
+  7: "ChordMate – Never Play the Wrong Chord Again!",
+  8: "Ayushman Test – Steady Hands, Smart Control",
+  9: "Automated Railway Track Fault Detector",
+  10: "Agentic AI for Intelligent Personal Financial Decision-Making",
 };
 
 export async function updateProblemStatementMaxParticipants(
@@ -100,7 +98,7 @@ export async function updateProblemStatementMaxParticipants(
       return { success: false, error: "Unauthorized: Only admins can update max participants" };
     }
 
-    if (problemStatementId < 1 || problemStatementId > 12) {
+    if (problemStatementId < 1 || problemStatementId > 10) {
       return { success: false, error: "Invalid problem statement ID" };
     }
 

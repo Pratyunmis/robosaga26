@@ -8,18 +8,16 @@ import { revalidatePath } from "next/cache";
 
 // Default problem statements with their titles
 const DEFAULT_PROBLEM_STATEMENTS = [
-  { id: 1, title: "Glove-Controlled Drift Racer", maxParticipants: 10 },
-  { id: 2, title: "Smart Attendance System", maxParticipants: 10 },
-  { id: 3, title: "Relief Supply Chain", maxParticipants: 10 },
-  { id: 4, title: "Smart Safety Monitor", maxParticipants: 10 },
-  { id: 5, title: "Line Follower Robot", maxParticipants: 10 },
-  { id: 6, title: "Drowsiness Detection", maxParticipants: 10 },
-  { id: 7, title: "Logistics Partner", maxParticipants: 10 },
-  { id: 8, title: "SuperSense", maxParticipants: 10 },
-  { id: 9, title: "Drip-Sync", maxParticipants: 10 },
-  { id: 10, title: "Pothole Patrol", maxParticipants: 10 },
-  { id: 11, title: "The Omni-Wheel Scout", maxParticipants: 10 },
-  { id: 12, title: "Watt-Watch", maxParticipants: 10 },
+  { id: 1, title: "The Reviewer Who Never Sleeps", maxParticipants: 10 },
+  { id: 2, title: "Seeing the World with One Sensor", maxParticipants: 10 },
+  { id: 3, title: "Finding the Way, One Step at a Time", maxParticipants: 10 },
+  { id: 4, title: "Glove-Controlled Drift Racer", maxParticipants: 10 },
+  { id: 5, title: "Drip-Sync: No More Guesswork!", maxParticipants: 10 },
+  { id: 6, title: "TrekBot – A Simple Quadruped Walking Robot", maxParticipants: 10 },
+  { id: 7, title: "ChordMate – Never Play the Wrong Chord Again!", maxParticipants: 10 },
+  { id: 8, title: "Ayushman Test – Steady Hands, Smart Control", maxParticipants: 10 },
+  { id: 9, title: "Automated Railway Track Fault Detector", maxParticipants: 10 },
+  { id: 10, title: "Agentic AI for Intelligent Personal Financial Decision-Making", maxParticipants: 10 },
 ];
 
 export type HackawayRegistrationState = {

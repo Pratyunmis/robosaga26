@@ -73,18 +73,16 @@ import {
 } from "@/lib/admin/actions";
 
 const PROBLEM_STATEMENTS: Record<number, string> = {
-  1: "Glove-Controlled Drift Racer",
-  2: "Smart Attendance System",
-  3: "Relief Supply Chain",
-  4: "Smart Safety Monitor",
-  5: "Line Follower Robot",
-  6: "Drowsiness Detection",
-  7: "Logistics Partner",
-  8: "SuperSense",
-  9: "Drip-Sync",
-  10: "Pothole Patrol",
-  11: "The Omni-Wheel Scout",
-  12: "Watt-Watch",
+  1: "The Reviewer Who Never Sleeps",
+  2: "Seeing the World with One Sensor",
+  3: "Finding the Way, One Step at a Time",
+  4: "Glove-Controlled Drift Racer",
+  5: "Drip-Sync: No More Guesswork!",
+  6: "TrekBot – A Simple Quadruped Walking Robot",
+  7: "ChordMate – Never Play the Wrong Chord Again!",
+  8: "Ayushman Test – Steady Hands, Smart Control",
+  9: "Automated Railway Track Fault Detector",
+  10: "Agentic AI for Intelligent Personal Financial Decision-Making",
 };
 
 export type HackawayRegistration = {
@@ -1007,41 +1005,49 @@ export function HackawayDataTable({
 
       {/* Settings Dialog */}
       <Dialog open={settingsDialogOpen} onOpenChange={setSettingsDialogOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <Settings className="h-5 w-5 text-yellow-500" />
+        <DialogContent className="w-[95vw] max-w-3xl max-h-[85vh] overflow-y-auto p-4 sm:p-6">
+          <DialogHeader className="space-y-1">
+            <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <Settings className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
               Edit Max Participants
             </DialogTitle>
-            <DialogDescription>
-              Set the maximum number of teams that can register for each problem
-              statement
+            <DialogDescription className="text-xs sm:text-sm">
+              Set max teams per problem statement
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-2 sm:gap-3 py-2 sm:py-4">
             {problemStatementSettings.map((ps) => (
               <div
                 key={ps.id}
-                className="flex items-center gap-4 p-4 rounded-lg border bg-card"
+                className="flex flex-col gap-2 p-3 sm:p-4 rounded-lg border bg-card"
               >
-                <Badge
-                  variant="outline"
-                  className="bg-yellow-500/10 text-yellow-600 border-yellow-500/30 shrink-0"
-                >
-                  #{ps.id}
-                </Badge>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium truncate">{ps.title}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Currently: {ps.registeredCount} registered
-                    {ps.isFull && (
-                      <span className="text-red-500 ml-2">(FULL)</span>
-                    )}
-                  </p>
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <Badge
+                    variant="outline"
+                    className="bg-yellow-500/10 text-yellow-600 border-yellow-500/30 shrink-0 text-xs"
+                  >
+                    #{ps.id}
+                  </Badge>
+                  <div className="flex-1 min-w-0">
+                    <p
+                      className="font-medium text-xs sm:text-sm leading-tight"
+                      title={ps.title}
+                    >
+                      {ps.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {ps.registeredCount} registered
+                      {ps.isFull && (
+                        <span className="text-red-500 ml-1">(FULL)</span>
+                      )}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-sm text-muted-foreground">Max:</span>
+                <div className="flex items-center justify-end gap-2 pt-1 border-t border-border/50">
+                  <span className="text-xs sm:text-sm text-muted-foreground">
+                    Max:
+                  </span>
                   <Input
                     type="number"
                     min={1}
@@ -1053,10 +1059,11 @@ export function HackawayDataTable({
                         [ps.id]: parseInt(e.target.value) || 1,
                       }))
                     }
-                    className="w-20 text-center"
+                    className="w-16 sm:w-20 text-center h-8 sm:h-9 text-sm"
                   />
                   <Button
                     size="sm"
+                    className="h-8 sm:h-9 px-2 sm:px-3"
                     onClick={() => handleSaveMaxParticipants(ps.id)}
                     disabled={
                       savingId === ps.id ||
@@ -1064,9 +1071,9 @@ export function HackawayDataTable({
                     }
                   >
                     {savingId === ps.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
                     ) : (
-                      <Save className="h-4 w-4" />
+                      <Save className="h-3 w-3 sm:h-4 sm:w-4" />
                     )}
                   </Button>
                 </div>
@@ -1074,9 +1081,11 @@ export function HackawayDataTable({
             ))}
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="pt-2">
             <Button
               variant="outline"
+              size="sm"
+              className="w-full sm:w-auto"
               onClick={() => setSettingsDialogOpen(false)}
             >
               Close
