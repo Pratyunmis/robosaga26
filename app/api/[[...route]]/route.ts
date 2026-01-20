@@ -95,44 +95,127 @@ app.get("/teams/:slug", async (c) => {
   }
 });
 
-// Public route - Get leaderboard
+// Leaderboard cache
+interface LeaderboardCache {
+  data: {
+    id: string;
+    teamName: string;
+    slug: string;
+    points: number;
+    members: number;
+    createdAt: Date;
+    rank: number;
+  }[];
+  totalTeams: number;
+  totalParticipants: number;
+  highestScore: number;
+  timestamp: number;
+}
+
+let leaderboardCache: LeaderboardCache | null = null;
+const CACHE_TTL = 30000; // 30 seconds cache
+
+// Helper function to get cached or fresh leaderboard data
+async function getLeaderboardData(): Promise<LeaderboardCache> {
+  const now = Date.now();
+  
+  // Return cached data if valid
+  if (leaderboardCache && (now - leaderboardCache.timestamp) < CACHE_TTL) {
+    return leaderboardCache;
+  }
+
+  // Fetch fresh data with optimized single query using subquery for member count
+  const teamsWithMemberCount = await db
+    .select({
+      id: teams.id,
+      name: teams.name,
+      slug: teams.slug,
+      score: teams.score,
+      createdAt: teams.createdAt,
+    })
+    .from(teams)
+    .orderBy(desc(teams.score));
+
+  // Get member counts in a single query
+  const memberCounts = await db
+    .select({
+      teamId: teamMembers.teamId,
+    })
+    .from(teamMembers);
+
+  // Create a map of team ID to member count
+  const memberCountMap = new Map<string, number>();
+  memberCounts.forEach((m) => {
+    memberCountMap.set(m.teamId, (memberCountMap.get(m.teamId) || 0) + 1);
+  });
+
+  // Combine the data
+  const rankedTeams = teamsWithMemberCount.map((team, index) => ({
+    id: team.id,
+    teamName: team.name,
+    slug: team.slug,
+    points: team.score,
+    members: memberCountMap.get(team.id) || 0,
+    createdAt: team.createdAt,
+    rank: index + 1,
+  }));
+
+  // Calculate stats
+  const totalParticipants = rankedTeams.reduce((sum, team) => sum + team.members, 0);
+  const highestScore = rankedTeams.length > 0 ? Math.max(...rankedTeams.map((t) => t.points)) : 0;
+
+  // Update cache
+  leaderboardCache = {
+    data: rankedTeams,
+    totalTeams: rankedTeams.length,
+    totalParticipants,
+    highestScore,
+    timestamp: now,
+  };
+
+  return leaderboardCache;
+}
+
+// Public route - Get leaderboard (with pagination support)
 app.get("/leaderboard", async (c) => {
   try {
-    const allTeams = await db
-      .select({
-        id: teams.id,
-        name: teams.name,
-        slug: teams.slug,
-        score: teams.score,
-        createdAt: teams.createdAt,
-      })
-      .from(teams)
-      .orderBy(desc(teams.score));
+    const page = parseInt(c.req.query("page") || "1");
+    const limit = parseInt(c.req.query("limit") || "20");
+    const all = c.req.query("all") === "true";
 
-    const teamsWithMembers = await Promise.all(
-      allTeams.map(async (team) => {
-        const members = await db
-          .select()
-          .from(teamMembers)
-          .where(eq(teamMembers.teamId, team.id));
+    const cachedData = await getLeaderboardData();
 
-        return {
-          id: team.id,
-          teamName: team.name,
-          slug: team.slug,
-          points: team.score,
-          members: members.length,
-          createdAt: team.createdAt,
-        };
-      })
-    );
+    if (all) {
+      // Return all data (for stats calculation)
+      return c.json({
+        teams: cachedData.data,
+        totalTeams: cachedData.totalTeams,
+        totalParticipants: cachedData.totalParticipants,
+        highestScore: cachedData.highestScore,
+      });
+    }
 
-    const rankedTeams = teamsWithMembers.map((team, index) => ({
-      ...team,
-      rank: index + 1,
-    }));
+    // Paginated response
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedTeams = cachedData.data.slice(startIndex, endIndex);
+    const hasMore = endIndex < cachedData.data.length;
 
-    return c.json({ teams: rankedTeams });
+    return c.json({
+      teams: paginatedTeams,
+      pagination: {
+        page,
+        limit,
+        totalTeams: cachedData.totalTeams,
+        totalPages: Math.ceil(cachedData.totalTeams / limit),
+        hasMore,
+      },
+      stats: {
+        totalTeams: cachedData.totalTeams,
+        totalParticipants: cachedData.totalParticipants,
+        highestScore: cachedData.highestScore,
+      },
+    });
   } catch (error) {
     console.error("Error fetching leaderboard:", error);
     return c.json({ error: "Internal server error" }, 500);

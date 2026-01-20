@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
-import { Trophy, Medal } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { Trophy, Medal, Loader2 } from "lucide-react";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import axios from "@/lib/axios";
+import { useEffect, useRef, useCallback } from "react";
 
 interface Team {
   rank: number;
@@ -18,20 +19,103 @@ interface Team {
   createdAt: Date;
 }
 
+interface LeaderboardResponse {
+  teams: Team[];
+  pagination: {
+    page: number;
+    limit: number;
+    totalTeams: number;
+    totalPages: number;
+    hasMore: boolean;
+  };
+  stats: {
+    totalTeams: number;
+    totalParticipants: number;
+    highestScore: number;
+  };
+}
+
+interface StatsResponse {
+  teams: Team[];
+  totalTeams: number;
+  totalParticipants: number;
+  highestScore: number;
+}
+
+const ITEMS_PER_PAGE = 10;
+
 export default function LeaderboardPage() {
-  // Fetch live leaderboard data
-  const { data, isLoading, error } = useQuery({
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  // Fetch paginated leaderboard data with infinite scroll
+  const {
+    data,
+    isLoading,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ["leaderboard"],
-    queryFn: async () => {
-      const { data } = await axios.get("/leaderboard");
-      return data.teams as Team[];
+    queryFn: async ({ pageParam = 1 }) => {
+      const { data } = await axios.get<LeaderboardResponse>(
+        `/leaderboard?page=${pageParam}&limit=${ITEMS_PER_PAGE}`,
+      );
+      return data;
     },
-    refetchInterval: 30000, // Refetch every 30 seconds for live updates
+    getNextPageParam: (lastPage) =>
+      lastPage.pagination.hasMore ? lastPage.pagination.page + 1 : undefined,
+    initialPageParam: 1,
+    staleTime: 30000, // 30 seconds cache on client
+    refetchInterval: 60000, // Refetch every 60 seconds for live updates
   });
 
-  const leaderboardData = data || [];
+  
+  const { data: statsData } = useQuery({
+    queryKey: ["leaderboard-stats"],
+    queryFn: async () => {
+      const { data } = await axios.get<StatsResponse>("/leaderboard?all=true");
+      return data;
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+  });
 
-  const topThree = leaderboardData.slice(0, 3);
+  // Flatten paginated data
+  const allTeams = data?.pages.flatMap((page) => page.teams) || [];
+  const topThree = allTeams.slice(0, 3);
+  const stats = statsData || data?.pages[0]?.stats;
+
+  // Intersection Observer for infinite scroll
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const [entry] = entries;
+      if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    [fetchNextPage, hasNextPage, isFetchingNextPage],
+  );
+
+  useEffect(() => {
+    const element = loadMoreRef.current;
+    if (!element) return;
+
+    observerRef.current = new IntersectionObserver(handleObserver, {
+      root: null,
+      rootMargin: "100px",
+      threshold: 0.1,
+    });
+
+    observerRef.current.observe(element);
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [handleObserver]);
 
   // Loading state
   if (isLoading) {
@@ -68,7 +152,7 @@ export default function LeaderboardPage() {
   }
 
   // No data state
-  if (leaderboardData.length === 0) {
+  if (allTeams.length === 0) {
     return (
       <div className="min-h-screen bg-linear-to-b from-black via-blue-950 to-black text-white">
         <Navbar />
@@ -140,7 +224,7 @@ export default function LeaderboardPage() {
       </section>
 
       {/* Top 3 Podium */}
-      {leaderboardData.length >= 3 && (
+      {topThree.length >= 3 && (
         <section className="pb-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid md:grid-cols-3 gap-8 mb-12">
@@ -153,7 +237,7 @@ export default function LeaderboardPage() {
               >
                 <Card
                   className={`bg-linear-to-br ${getMedalColor(
-                    2
+                    2,
                   )} border-2 border-gray-300 text-center pt-8`}
                 >
                   <div className="mb-4">{getMedalIcon(2)}</div>
@@ -184,7 +268,7 @@ export default function LeaderboardPage() {
               >
                 <Card
                   className={`bg-linear-to-br ${getMedalColor(
-                    1
+                    1,
                   )} border-2 border-yellow-400 text-center pt-8 transform md:scale-110`}
                 >
                   <div className="mb-4">{getMedalIcon(1)}</div>
@@ -216,7 +300,7 @@ export default function LeaderboardPage() {
               >
                 <Card
                   className={`bg-linear-to-br ${getMedalColor(
-                    3
+                    3,
                   )} border-2 border-orange-400 text-center pt-8`}
                 >
                   <div className="mb-4">{getMedalIcon(3)}</div>
@@ -267,13 +351,9 @@ export default function LeaderboardPage() {
 
               {/* Table Rows */}
               <div className="divide-y divide-gray-800">
-                {leaderboardData.map((team, index) => (
-                  <motion.div
-                    key={team.rank}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    viewport={{ once: true }}
+                {allTeams.map((team) => (
+                  <div
+                    key={team.id}
                     className="grid grid-cols-12 gap-4 p-4 hover:bg-yellow-400/10 transition-colors"
                   >
                     <div className="col-span-1 text-center font-bold text-yellow-400 flex items-center justify-center gap-1">
@@ -297,8 +377,18 @@ export default function LeaderboardPage() {
                     <div className="col-span-2 text-center text-gray-400 text-sm">
                       {team.slug}
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
+              </div>
+
+              {/* Load More Trigger & Indicator */}
+              <div ref={loadMoreRef} className="py-4 text-center">
+                {isFetchingNextPage && (
+                  <div className="flex items-center justify-center gap-2 text-gray-400">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Loading more teams...</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -325,7 +415,7 @@ export default function LeaderboardPage() {
               viewport={{ once: true }}
             >
               <div className="text-5xl font-bold text-yellow-400 mb-2">
-                {leaderboardData.length}
+                {stats?.totalTeams || allTeams.length}
               </div>
               <div className="text-gray-400">Total Teams</div>
             </motion.div>
@@ -337,7 +427,7 @@ export default function LeaderboardPage() {
               viewport={{ once: true }}
             >
               <div className="text-5xl font-bold text-yellow-400 mb-2">
-                {leaderboardData.reduce((sum, team) => sum + team.members, 0)}
+                {stats?.totalParticipants || 0}
               </div>
               <div className="text-gray-400">Participants</div>
             </motion.div>
@@ -349,7 +439,7 @@ export default function LeaderboardPage() {
               viewport={{ once: true }}
             >
               <div className="text-5xl font-bold text-yellow-400 mb-2">
-                {Math.max(...leaderboardData.map((t) => t.points))}
+                {stats?.highestScore || 0}
               </div>
               <div className="text-gray-400">Highest Score</div>
             </motion.div>
