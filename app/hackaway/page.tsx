@@ -661,13 +661,15 @@ export default function HackAwayPage() {
                       <span className="truncate flex-1">{stmt.title}</span>
                       {registrationStats[stmt.no] && (
                         <span
-                          className={`text-xs px-2 py-0.5 flex justify-center rounded-full shrink-0 ${registrationStats[stmt.no].isFull ? "bg-red-500/20 text-red-900" : "hidden"}`}
+                          className={`text-xs px-2 py-0.5 flex justify-center rounded-full shrink-0 ${
+                            registrationStats[stmt.no].isFull
+                              ? "bg-red-500/20 text-red-400"
+                              : "bg-yellow-400/20 text-yellow-400"
+                          }`}
                         >
-                          {registrationStats[stmt.no].isFull && (
-                            <span className="text-red-600 text-center font-medium">
-                              Full
-                            </span>
-                          )}
+                          {registrationStats[stmt.no].max -
+                            registrationStats[stmt.no].count}{" "}
+                          slots
                         </span>
                       )}
                     </TabsTrigger>
@@ -700,14 +702,16 @@ export default function HackAwayPage() {
                           </div>
                           {registrationStats[stmt.no] && (
                             <div
-                              className={`flex items-center gap-2 text-sm ${registrationStats[stmt.no].isFull ? "text-red-400" : "text-gray-400"}`}
+                              className={`flex items-center gap-2 text-sm ${
+                                registrationStats[stmt.no].isFull
+                                  ? "text-red-400"
+                                  : "text-green-400"
+                              }`}
                             >
-                              <span>
-                                {registrationStats[stmt.no].isFull && (
-                                  <span className="ml-2 text-red-400 font-medium">
-                                    [ Max Participants Reached ]
-                                  </span>
-                                )}
+                              <span className="font-medium">
+                                {registrationStats[stmt.no].max -
+                                  registrationStats[stmt.no].count}{" "}
+                                slots available
                               </span>
                             </div>
                           )}
@@ -1011,7 +1015,6 @@ export default function HackAwayPage() {
                             >
                               {stmt.title}
                             </span>
- 
                           </div>
                         </SelectItem>
                       ))}
