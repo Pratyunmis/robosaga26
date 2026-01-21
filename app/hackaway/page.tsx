@@ -321,8 +321,7 @@ export default function HackAwayPage() {
     {
       id: "multi-modal-severity",
       no: 12,
-      title:
-        "Multi-Modal Severity Quantifier",
+      title: "Multi-Modal Severity Quantifier",
       icon: BrainCircuit,
       description: "Medical Imaging AI",
       story:
@@ -662,10 +661,13 @@ export default function HackAwayPage() {
                       <span className="truncate flex-1">{stmt.title}</span>
                       {registrationStats[stmt.no] && (
                         <span
-                          className={`ml-2 text-xs px-2 py-0.5 rounded-full shrink-0 ${registrationStats[stmt.no].isFull ? "bg-red-500/20 text-red-400" : "bg-yellow-400/20 text-yellow-400"}`}
+                          className={`text-xs px-2 py-0.5 flex justify-center rounded-full shrink-0 ${registrationStats[stmt.no].isFull ? "bg-red-500/20 text-red-900" : "hidden"}`}
                         >
-                          {registrationStats[stmt.no].count}/
-                          {registrationStats[stmt.no].max}
+                          {registrationStats[stmt.no].isFull && (
+                            <span className="text-red-600 text-center font-medium">
+                              Full
+                            </span>
+                          )}
                         </span>
                       )}
                     </TabsTrigger>
@@ -700,14 +702,10 @@ export default function HackAwayPage() {
                             <div
                               className={`flex items-center gap-2 text-sm ${registrationStats[stmt.no].isFull ? "text-red-400" : "text-gray-400"}`}
                             >
-                              <Users className="w-4 h-4" />
                               <span>
-                                {registrationStats[stmt.no].count}/
-                                {registrationStats[stmt.no].max} teams
-                                registered
                                 {registrationStats[stmt.no].isFull && (
                                   <span className="ml-2 text-red-400 font-medium">
-                                    (FULL)
+                                    [ Max Participants Reached ]
                                   </span>
                                 )}
                               </span>
@@ -986,13 +984,13 @@ export default function HackAwayPage() {
                         className="text-slate-400"
                       />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-900 border border-slate-700 shadow-2xl max-h-[300px] z-[100] rounded-xl">
+                    <SelectContent className="bg-slate-900 border border-slate-700 shadow-2xl max-h-[300px] z-100 rounded-xl">
                       {problemStatements.map((stmt) => (
                         <SelectItem
                           key={stmt.no}
                           value={stmt.no.toString()}
                           disabled={registrationStats[stmt.no]?.isFull}
-                          className="text-white py-2.5 px-3 cursor-pointer focus:bg-yellow-400/15 focus:text-white data-[highlighted]:bg-yellow-400/15 data-[highlighted]:text-white data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed rounded-lg mx-1 my-0.5"
+                          className="text-white py-2.5 px-3 cursor-pointer focus:bg-yellow-400/15 focus:text-white data-highlighted:bg-yellow-400/15 data-highlighted:text-white data-disabled:opacity-50 data-disabled:cursor-not-allowed rounded-lg mx-1 my-0.5"
                         >
                           <div className="flex items-center gap-2.5 w-full">
                             <span
@@ -1013,19 +1011,7 @@ export default function HackAwayPage() {
                             >
                               {stmt.title}
                             </span>
-                            {registrationStats[stmt.no] && (
-                              <span
-                                className={`text-xs px-2 py-0.5 rounded-md font-medium shrink-0 ${
-                                  registrationStats[stmt.no].isFull
-                                    ? "bg-red-500/20 text-red-400"
-                                    : "bg-slate-700 text-slate-400"
-                                }`}
-                              >
-                                {registrationStats[stmt.no].count}/
-                                {registrationStats[stmt.no].max}
-                                {registrationStats[stmt.no].isFull && " FULL"}
-                              </span>
-                            )}
+ 
                           </div>
                         </SelectItem>
                       ))}
@@ -1037,7 +1023,7 @@ export default function HackAwayPage() {
                       <p className="text-sm text-slate-300 font-medium">
                         Selected:
                       </p>
-                      <p className="text-sm text-yellow-400 font-semibold mt-1 break-words">
+                      <p className="text-sm text-yellow-400 font-semibold mt-1 wrap-break-word">
                         #{selectedProblemStatement} –{" "}
                         {getProblemStatementTitle(
                           parseInt(selectedProblemStatement),
@@ -1070,7 +1056,7 @@ export default function HackAwayPage() {
                 </Button>
                 <Button
                   onClick={handleConfirmRegistration}
-                  className="flex-1 h-10 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold hover:from-yellow-500 hover:to-orange-600 shadow-lg shadow-yellow-400/20 rounded-xl transition-all"
+                  className="flex-1 h-10 bg-linear-to-r from-yellow-400 to-orange-500 text-black font-semibold hover:from-yellow-500 hover:to-orange-600 shadow-lg shadow-yellow-400/20 rounded-xl transition-all"
                   disabled={isLoading || !selectedProblemStatement}
                 >
                   {isLoading ? (

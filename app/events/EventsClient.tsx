@@ -15,15 +15,17 @@ import { Button } from "@/components/ui/button";
 import {
   Laptop,
   Bot,
-  Target,
+  PartyPopper,
+  Sword,
+  Presentation,
+  Award,
   Wrench,
-  Zap,
-  Mic,
+  Flag,
   Calendar,
   Clock,
-  type LucideIcon,
   Loader2,
   CheckCircle,
+  Sparkles,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -42,14 +44,93 @@ type DbEvent = {
   endTime: Date | null;
 };
 
-// Removing dbEvents from props as we fetch only from client
+// Static Timeline Data matching the RoboSaga'26 Schedule
+const STATIC_TIMELINE = [
+  {
+    day: 1,
+    date: "23/01/2026",
+    fullDate: "DAY 1 - 23/01/2026",
+    events: [
+      {
+        eventNum: 1,
+        name: "Opening Ceremony",
+        time: "12:30 pm - 1 pm",
+        icon: Flag,
+        slug: "opening-ceremony",
+      },
+      {
+        eventNum: 2,
+        name: "Fun Event - Robo Runway",
+        time: "2 pm - 5 pm",
+        icon: PartyPopper,
+        slug: "robo-runway",
+      },
+      {
+        eventNum: 3,
+        name: "Overnight Hackathon - HackAway",
+        time: "7 pm - 2 pm of next day",
+        icon: Laptop,
+        slug: "hackaway",
+      },
+    ],
+  },
+  {
+    day: 2,
+    date: "24/01/2026",
+    fullDate: "DAY 2 - 24/01/2026",
+    events: [
+      {
+        eventNum: 1,
+        name: "Fun Event - Burst n Brawl",
+        time: "10 am - 1 pm",
+        icon: Sword,
+        slug: "burst-n-brawl",
+      },
+      {
+        eventNum: 2,
+        name: "Robotics Exhibition",
+        time: "10 am - 2 pm",
+        icon: Bot,
+        slug: "robotics-exhibition",
+      },
+      {
+        eventNum: 3,
+        name: "Speaker Session and Award Ceremony",
+        time: "3 pm - 7:30 pm",
+        icon: Presentation,
+        slug: "speaker-session",
+      },
+    ],
+  },
+  {
+    day: 3,
+    date: "25/01/2026",
+    fullDate: "DAY 3 - 25/01/2026",
+    events: [
+      {
+        eventNum: 1,
+        name: "Robotics Workshop",
+        time: "10 am - 12 pm",
+        icon: Wrench,
+        slug: "robotics-workshop",
+      },
+      {
+        eventNum: 2,
+        name: "Closing Ceremony",
+        time: "12:30 pm - 1:30 pm",
+        icon: Award,
+        slug: "closing-ceremony",
+      },
+    ],
+  },
+];
+
 export default function EventsClient() {
   const [registeredEvents, setRegisteredEvents] = useState<string[]>([]);
   const [fetchedEvents, setFetchedEvents] = useState<DbEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  // ... (rest of simple state)
   const [loadingEvents, setLoadingEvents] = useState<Record<string, boolean>>(
-    {}
+    {},
   );
 
   useEffect(() => {
@@ -60,7 +141,7 @@ export default function EventsClient() {
           getEvents(),
         ]);
         setRegisteredEvents(registrations);
-        setFetchedEvents(activeEvents); // Update state for events
+        setFetchedEvents(activeEvents);
       } catch (error) {
         console.error("Failed to fetch data", error);
       } finally {
@@ -69,80 +150,6 @@ export default function EventsClient() {
     };
     fetchRegistrations();
   }, []);
-
-  const eventsList = fetchedEvents;
-
-  // Merge DB data with static metadata
-  const events = eventsList
-    .map((e) => {
-      const formattedDate = e.startTime
-        ? new Date(e.startTime).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-          })
-        : "TBA";
-
-      // Deterministic icon selection based on slug
-      const ICONS = [Laptop, Bot, Target, Wrench, Zap, Mic];
-      const iconIndex =
-        e.slug.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) %
-        ICONS.length;
-      const SelectedIcon = ICONS[iconIndex];
-
-      // Placeholder metadata since external definition is missing
-      const metadata = {
-        day: e.startTime
-          ? new Date(e.startTime).toLocaleDateString("en-US", {
-              weekday: "long",
-            })
-          : "TBA",
-        displayTitle: e.name,
-        icon: SelectedIcon,
-        time: e.startTime
-          ? new Date(e.startTime).toLocaleTimeString("en-US", {
-              hour: "numeric",
-              minute: "2-digit",
-            })
-          : "TBA",
-        highlights: [],
-      };
-
-      return {
-        id: e.slug, // Use slug as ID for frontend logic and registration
-        dbId: e.id,
-        title: metadata.displayTitle || e.name,
-        description: e.description || "",
-        date: formattedDate,
-        startTime: e.startTime,
-        ...metadata,
-      };
-    })
-    .filter((e) => e !== null) as Array<{
-    id: string;
-    dbId: string;
-    title: string;
-    description: string;
-    date: string;
-    startTime: Date | null;
-    icon: LucideIcon;
-    day: string;
-    time: string;
-    highlights: string[];
-  }>;
-
-  // Group events for timeline
-  const eventsByDate = events.reduce((acc, event) => {
-    const dateKey = event.date;
-    if (!acc[dateKey]) acc[dateKey] = [];
-    acc[dateKey].push(event);
-    return acc;
-  }, {} as Record<string, typeof events>);
-
-  const sortedDateKeys = Object.keys(eventsByDate).sort((a, b) => {
-    if (a === "TBA") return 1;
-    if (b === "TBA") return -1;
-    return new Date(a).getTime() - new Date(b).getTime();
-  });
 
   const handleRegister = async (eventSlug: string, eventTitle: string) => {
     setLoadingEvents((prev) => ({ ...prev, [eventSlug]: true }));
@@ -154,7 +161,6 @@ export default function EventsClient() {
         setRegisteredEvents((prev) => [...prev, eventSlug]);
       } else if (result.alreadyRegistered) {
         toast.info(result.message || "Already registered");
-        // Ensure it's marked as registered in state just in case
         if (!registeredEvents.includes(eventSlug)) {
           setRegisteredEvents((prev) => [...prev, eventSlug]);
         }
@@ -170,233 +176,389 @@ export default function EventsClient() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-black via-blue-950 to-black text-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 text-white">
       <Navbar />
 
       {isLoading ? (
         <div className="flex-1 flex flex-col items-center justify-center min-h-screen">
-          <Loader2 className="w-12 h-12 text-yellow-400 animate-spin mb-4" />
+          <Loader2 className="w-12 h-12 text-amber-400 animate-spin mb-4" />
           <p className="text-gray-400 text-lg">Loading events...</p>
         </div>
       ) : (
         <>
           {/* Hero Section */}
-          <section className="pt-32 pb-20 relative overflow-hidden">
-            <div className="absolute inset-0">
+          <section className="pt-32 pb-16 relative overflow-hidden">
+            {/* Animated Background Elements */}
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl" />
+              <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" />
               <motion.div
-                className="absolute top-20 left-20 w-4 h-4 bg-yellow-400 rounded-full"
-                animate={{ y: [0, -20, 0], opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute top-20 left-10 md:left-20 w-2 md:w-3 h-2 md:h-3 bg-amber-400 rounded-full"
+                animate={{ y: [0, -20, 0], opacity: [0.3, 1, 0.3] }}
+                transition={{ duration: 3, repeat: Infinity }}
               />
               <motion.div
-                className="absolute bottom-40 right-20 w-3 h-3 bg-yellow-400 rounded-full"
-                animate={{ y: [0, -15, 0], opacity: [0.5, 1, 0.5] }}
+                className="absolute top-40 right-10 md:right-32 w-2 h-2 bg-amber-300 rounded-full"
+                animate={{ y: [0, -15, 0], opacity: [0.3, 1, 0.3] }}
                 transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
+              />
+              <motion.div
+                className="absolute bottom-40 left-1/3 w-2 h-2 bg-purple-400 rounded-full"
+                animate={{ y: [0, -10, 0], opacity: [0.3, 1, 0.3] }}
+                transition={{ duration: 2, repeat: Infinity, delay: 1 }}
               />
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-full px-3 py-1.5 md:px-4 md:py-2 mb-4 md:mb-6"
+              >
+                <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4 text-amber-400" />
+                <span className="text-amber-300 text-xs md:text-sm font-medium">
+                  January 23-25, 2026
+                </span>
+              </motion.div>
+
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-5xl md:text-7xl font-bold mb-6"
+                transition={{ delay: 0.1 }}
+                className="text-3xl sm:text-5xl md:text-7xl font-bold mb-4 md:mb-6"
               >
-                Event <span className="text-yellow-400">Schedule</span>
+                Event{" "}
+                <span className="bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 bg-clip-text text-transparent">
+                  Schedule
+                </span>
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="text-xl text-gray-300 max-w-3xl mx-auto"
+                className="text-sm sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto px-2"
               >
-                Three days of innovation, competition, and learning. Choose your
-                events and get ready to compete!
+                Three days of innovation, competition, and learning. Discover
+                our action-packed schedule!
               </motion.p>
             </div>
           </section>
 
-          {/* Events Grid */}
-          <section className="pb-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="grid md:grid-cols-2 gap-8">
-                {events.map((event, index) => (
-                  <motion.div
-                    key={event.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                  >
-                    <Card className="bg-linear-to-br from-gray-900 to-black border-2 border-yellow-400/50 hover:border-yellow-400 transition-all h-full flex flex-col justify-between">
-                      <div>
-                        <CardHeader>
-                          <div className="flex items-center justify-between mb-4">
-                            <event.icon className="w-12 h-12 text-yellow-400" />
-                            <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-bold">
-                              {event.day}
-                            </span>
-                          </div>
-                          <CardTitle className="text-2xl text-yellow-400 mb-2">
-                            {event.title}
-                          </CardTitle>
-                          <CardDescription className="text-gray-400">
-                            <div className="flex items-center gap-2">
-                              <Calendar className="w-4 h-4" /> {event.date}
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Clock className="w-4 h-4" /> {event.time}
-                            </div>
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-gray-300 mb-4">
-                            {event.description}
-                          </p>
-                          <div className="space-y-2 mb-4">
-                            {event.highlights.map((highlight, i) => (
-                              <div
-                                key={i}
-                                className="flex items-center text-sm text-gray-400"
-                              >
-                                <span className="text-yellow-400 mr-2">▸</span>
-                                {highlight}
+          {/* Static Timeline Section */}
+          <section className="py-12 md:py-16 relative">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+              {/* Timeline Container with glass effect */}
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="relative bg-gradient-to-br from-amber-50/95 via-orange-50/95 to-amber-100/95 backdrop-blur-xl rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-12 shadow-2xl border border-amber-200/50"
+              >
+                {/* Decorative corner elements */}
+                <div className="absolute top-0 left-0 w-20 h-20 bg-gradient-to-br from-amber-400/20 to-transparent rounded-tl-3xl" />
+                <div className="absolute bottom-0 right-0 w-20 h-20 bg-gradient-to-tl from-orange-400/20 to-transparent rounded-br-3xl" />
+
+                {/* Timeline Content */}
+                <div className="space-y-10">
+                  {STATIC_TIMELINE.map((day, dayIndex) => (
+                    <motion.div
+                      key={day.day}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ delay: dayIndex * 0.15 }}
+                      viewport={{ once: true }}
+                    >
+                      {/* Day Header */}
+                      <motion.h3
+                        className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 mb-4 md:mb-6 tracking-tight"
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ delay: dayIndex * 0.15 + 0.1 }}
+                        viewport={{ once: true }}
+                      >
+                        {day.fullDate}
+                      </motion.h3>
+
+                      {/* Events Table */}
+                      <div className="space-y-2 md:space-y-3">
+                        {day.events.map((event, eventIndex) => (
+                          <motion.div
+                            key={event.slug}
+                            initial={{ opacity: 0, y: 10 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{
+                              delay: dayIndex * 0.15 + eventIndex * 0.08 + 0.2,
+                            }}
+                            viewport={{ once: true }}
+                            className="py-3 px-3 md:px-4 rounded-xl hover:bg-white/50 transition-colors group"
+                          >
+                            {/* Mobile Layout - Stacked */}
+                            <div className="md:hidden">
+                              <div className="flex items-start gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-sm shrink-0 mt-0.5">
+                                  <event.icon className="w-4 h-4" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-slate-500 text-xs font-medium">
+                                      Event {event.eventNum}
+                                    </span>
+                                  </div>
+                                  <h4 className="text-slate-800 font-semibold text-sm leading-tight mb-1">
+                                    {event.name}
+                                  </h4>
+                                  <span className="text-slate-600 text-xs font-medium">
+                                    {event.time}
+                                  </span>
+                                </div>
                               </div>
-                            ))}
-                          </div>
-                        </CardContent>
+                            </div>
+
+                            {/* Desktop Layout - Grid */}
+                            <div className="hidden md:grid md:grid-cols-12 md:gap-4 md:items-center">
+                              {/* Event Number */}
+                              <div className="col-span-2">
+                                <span className="text-slate-600 font-medium text-base">
+                                  Event {event.eventNum}
+                                </span>
+                              </div>
+
+                              {/* Event Name */}
+                              <div className="col-span-6 flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
+                                  <event.icon className="w-4 h-4" />
+                                </div>
+                                <span className="text-slate-800 font-semibold text-base">
+                                  {event.name}
+                                </span>
+                              </div>
+
+                              {/* Time */}
+                              <div className="col-span-4 text-right">
+                                <span className="text-slate-700 font-medium text-base">
+                                  {event.time}
+                                </span>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
                       </div>
 
-                      <div className="p-6 pt-0 mt-auto">
-                        {registeredEvents.includes(event.id) ? (
-                          <Button
-                            variant="outline"
-                            className="w-full bg-green-900/20 border-green-500 text-green-500 hover:bg-green-900/30 hover:text-green-400 cursor-default"
-                          >
-                            <CheckCircle className="w-4 h-4 mr-2" />
-                            Registered
-                          </Button>
-                        ) : (
-                          <Button
-                            variant="pacman"
-                            className="w-full"
-                            onClick={() =>
-                              handleRegister(event.id, event.title)
-                            }
-                            disabled={loadingEvents[event.id]}
-                          >
-                            {loadingEvents[event.id] ? (
-                              <>
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Registering...
-                              </>
-                            ) : (
-                              "Register Now"
-                            )}
-                          </Button>
-                        )}
-                      </div>
-                    </Card>
-                  </motion.div>
-                ))}
-              </div>
+                      {/* Separator */}
+                      {dayIndex < STATIC_TIMELINE.length - 1 && (
+                        <div className="mt-8 border-b-2 border-dashed border-amber-300/50" />
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Footer Note */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                  viewport={{ once: true }}
+                  className="mt-10 pt-8 border-t-2 border-slate-800/10"
+                >
+                  <p className="text-center text-slate-800 font-bold text-sm md:text-base uppercase tracking-wider">
+                    Closing Ceremony of RoboSaga&apos;26 by
+                    <br />
+                    <span className="text-lg md:text-xl">
+                      Vice-Chancellor of B.I.T Mesra
+                    </span>
+                  </p>
+                </motion.div>
+              </motion.div>
             </div>
           </section>
 
-          {/* Timeline */}
-          <section className="py-20 bg-black/50">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Event Cards Section */}
+          <section className="py-20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-center mb-16"
+                className="text-center mb-8 md:mb-12"
               >
-                <h2 className="text-4xl font-bold mb-4">
-                  Program <span className="text-yellow-400">Flow</span>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+                  Register for{" "}
+                  <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
+                    Events
+                  </span>
                 </h2>
-                <div className="w-20 h-1 bg-yellow-400 mx-auto rounded-full" />
+                <p className="text-gray-400 max-w-2xl mx-auto text-sm md:text-base">
+                  Choose the events you want to participate in and secure your
+                  spot!
+                </p>
               </motion.div>
 
-              <div className="max-w-3xl mx-auto">
-                {sortedDateKeys.length === 0 ? (
-                  <div className="text-center text-gray-400">
-                    No events scheduled yet.
-                  </div>
-                ) : (
-                  <div className="relative border-l-2 border-yellow-400/20 ml-4 md:ml-12 space-y-12">
-                    {sortedDateKeys.map((date, index) => (
-                      <motion.div
-                        key={date}
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        viewport={{ once: true }}
-                        className="relative pl-8 md:pl-12"
-                      >
-                        {/* Dot */}
-                        <div className="absolute -left-[9px] top-2 w-4 h-4 rounded-full bg-black border-2 border-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.5)]" />
+              {fetchedEvents.length === 0 ? (
+                <div className="text-center text-gray-400 py-12">
+                  <p className="text-lg">No events available yet.</p>
+                  <p className="text-sm mt-2">Check back soon!</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                  {[...fetchedEvents]
+                    .sort((a, b) => {
+                      if (!a.startTime) return 1;
+                      if (!b.startTime) return -1;
+                      return (
+                        new Date(a.startTime).getTime() -
+                        new Date(b.startTime).getTime()
+                      );
+                    })
+                    .map((event, index) => {
+                      const isRegistered = registeredEvents.includes(
+                        event.slug,
+                      );
 
-                        <h3 className="text-2xl font-bold text-yellow-400 mb-6 flex items-center gap-3">
-                          {date}
-                        </h3>
+                      // Get icon based on slug matching timeline data
+                      const timelineEvent = STATIC_TIMELINE.flatMap(
+                        (d) => d.events,
+                      ).find((e) => e.slug === event.slug);
+                      const EventIcon = timelineEvent?.icon || Bot;
 
-                        <div className="space-y-4">
-                          {eventsByDate[date]
-                            .sort(
-                              (a, b) =>
-                                new Date(a.startTime ?? 0).getTime() -
-                                new Date(b.startTime ?? 0).getTime()
-                            )
-                            .map((event) => (
-                              <Card
-                                key={event.id}
-                                className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors"
-                              >
-                                <CardContent className="p-4 flex gap-4 items-center">
-                                  <div className="bg-yellow-400/10 p-3 rounded-full text-yellow-400 shrink-0">
-                                    <event.icon className="w-5 h-5" />
+                      // Format date and time
+                      const formattedDate = event.startTime
+                        ? new Date(event.startTime).toLocaleDateString(
+                            "en-IN",
+                            {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            },
+                          )
+                        : "TBA";
+
+                      const formattedTime = event.startTime
+                        ? new Date(event.startTime).toLocaleTimeString(
+                            "en-IN",
+                            {
+                              hour: "numeric",
+                              minute: "2-digit",
+                              hour12: true,
+                            },
+                          )
+                        : "TBA";
+
+                      return (
+                        <motion.div
+                          key={event.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          viewport={{ once: true }}
+                        >
+                          <Card className="group relative overflow-hidden bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm border border-white/10 hover:border-amber-400/50 transition-all duration-300 h-full flex flex-col">
+                            {/* Glow effect on hover */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/0 to-orange-500/0 group-hover:from-amber-500/5 group-hover:to-orange-500/5 transition-all duration-300" />
+
+                            <CardHeader className="relative pb-3">
+                              {/* Icon and Badge */}
+                              <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
+                                    <EventIcon className="w-5 h-5 text-white" />
                                   </div>
-                                  <div>
-                                    <div className="text-yellow-400 text-sm font-bold mb-0.5 font-mono">
-                                      {event.time}
-                                    </div>
-                                    <h4 className="text-white font-semibold">
-                                      {event.title}
-                                    </h4>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            ))}
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
-              </div>
+                                </div>
+                                <span className="bg-gradient-to-r from-amber-400/20 to-orange-400/20 text-amber-300 px-3 py-1 rounded-full text-xs font-bold border border-amber-400/30">
+                                  {event.startTime
+                                    ? new Date(
+                                        event.startTime,
+                                      ).toLocaleDateString("en-US", {
+                                        weekday: "short",
+                                      })
+                                    : "TBA"}
+                                </span>
+                              </div>
+
+                              <CardTitle className="text-lg text-white mb-1 group-hover:text-amber-300 transition-colors">
+                                {event.name}
+                              </CardTitle>
+                              <CardDescription className="text-gray-400">
+                                <div className="flex items-center gap-2 text-sm">
+                                  <Calendar className="w-3.5 h-3.5 text-amber-400/70" />
+                                  <span>{formattedDate}</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm mt-1">
+                                  <Clock className="w-3.5 h-3.5 text-amber-400/70" />
+                                  <span>{formattedTime}</span>
+                                </div>
+                              </CardDescription>
+                            </CardHeader>
+
+                            <CardContent className="relative flex-1 flex flex-col justify-end pt-0">
+                              {event.description && (
+                                <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                                  {event.description}
+                                </p>
+                              )}
+
+                              {isRegistered ? (
+                                <Button
+                                  variant="outline"
+                                  className="w-full bg-emerald-500/10 border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300 cursor-default"
+                                >
+                                  <CheckCircle className="w-4 h-4 mr-2" />
+                                  Registered
+                                </Button>
+                              ) : (
+                                <Button
+                                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 transition-all"
+                                  onClick={() =>
+                                    handleRegister(event.slug, event.name)
+                                  }
+                                  disabled={loadingEvents[event.slug]}
+                                >
+                                  {loadingEvents[event.slug] ? (
+                                    <>
+                                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                      Registering...
+                                    </>
+                                  ) : (
+                                    "Register Now"
+                                  )}
+                                </Button>
+                              )}
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      );
+                    })}
+                </div>
+              )}
             </div>
           </section>
 
-          {/* CTA */}
-          <section className="py-20">
+          {/* CTA Section */}
+          <section className="py-12 md:py-20">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                className="bg-linear-to-r from-yellow-400 to-yellow-500 p-12 rounded-2xl"
+                className="relative overflow-hidden bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 p-6 sm:p-10 md:p-14 rounded-2xl md:rounded-3xl shadow-2xl"
               >
-                <h2 className="text-4xl font-bold text-black mb-4">
-                  Ready to Participate?
-                </h2>
-                <p className="text-black/80 text-lg mb-8">
-                  Register your team now and secure your spot in RoboSaga
-                  &apos;26!
-                </p>
-                <Link href="/team">
-                  <button className="bg-black text-yellow-400 px-8 py-4 rounded-full font-bold hover:bg-gray-900 transition-colors text-lg">
-                    Manage Team
-                  </button>
-                </Link>
+                {/* Decorative elements */}
+                <div className="absolute top-0 right-0 w-32 md:w-40 h-32 md:h-40 bg-white/10 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-24 md:w-32 h-24 md:h-32 bg-orange-600/30 rounded-full blur-2xl" />
+
+                <div className="relative z-10">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">
+                    Ready to Participate?
+                  </h2>
+                  <p className="text-white/80 text-sm sm:text-base md:text-lg mb-6 md:mb-8 max-w-xl mx-auto">
+                    Register your team now and secure your spot in RoboSaga
+                    &apos;26!
+                  </p>
+                  <Link href="/team">
+                    <button className="bg-slate-900 text-amber-400 px-6 py-3 md:px-8 md:py-4 rounded-full font-bold hover:bg-slate-800 transition-all text-sm md:text-lg shadow-xl hover:shadow-2xl hover:-translate-y-0.5">
+                      Manage Your Team
+                    </button>
+                  </Link>
+                </div>
               </motion.div>
             </div>
           </section>
