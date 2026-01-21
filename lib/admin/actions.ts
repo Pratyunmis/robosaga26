@@ -82,12 +82,12 @@ const PS_TITLES: Record<number, string> = {
   4: "Glove-Controlled Drift Racer: Master Every Move!",
   5: "TrekBot – A Simple Quadruped Walking Robot",
   6: "ChordMate – Never Play the Wrong Chord Again!",
-  7: "Ayushman Test – Steady Hands, Smart Control",
+  7: "Drip-Sync: No More Guesswork!",
   8: "Automated Railway Track Fault Detector",
   9: "Agentic AI for Intelligent Personal Financial Decision-Making",
   10: "RescueNet – Every Minute Knows Where to Go",
   11: "Salil's Inbox – Signal, Not Noise",
-  12: "Multi-Modal Severity Quantifier – When Images and Reports Speak Together",
+  12: "Multi-Modal Severity Quantifier",
 };
 
 export async function updateProblemStatementMaxParticipants(

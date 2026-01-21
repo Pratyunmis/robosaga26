@@ -44,6 +44,7 @@ import {
   AlertTriangle,
   Inbox,
   BrainCircuit,
+  Activity,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -235,18 +236,19 @@ export default function HackAwayPage() {
       ],
     },
     {
-      id: "ball-balancer",
+      id: "drip-sync",
       no: 7,
-      title: "Ayushman Test – Steady Hands, Smart Control",
-      icon: Scale,
-      description: "Ball Balancing Platform",
+      title: "Drip-Sync: No More Guesswork!",
+      icon: Activity,
+      description: "Smart Saline Monitoring System",
       story:
-        "Ayushman is designing a small robotic system that needs to keep fragile objects perfectly balanced. During testing, he places a ball on a flat platform, but even the smallest tilt causes the ball to roll away. He realizes that keeping the platform steady by hand is impossible—the system must sense, think, and react instantly. Ayushman starts wondering—what if the platform could automatically adjust its angle to keep the ball balanced at one spot, no matter where the ball moves?",
+        "Sarah manages a busy hospital ward where tracking IV saline progress involves constant checking and guessing. One afternoon, while she attends to a patient in Room 1, the IV drip for a patient in Room 4 runs out. Without an alert, the patient waits with an empty bottle for twenty minutes, growing anxious and repeatedly pressing the call button. The next day, Sarah tries to stay proactive by making frequent rounds, but she often finds bottles are still 70% full. She realizes she is wasting time checking drips that seem fine while other patients might actually need her help. She needs a way to know exactly when a treatment has finished without hovering over each bed. What if the saline stand could communicate with the nurse station, providing a live countdown and an instant alert as soon as a drip is complete?",
       challenge: [
-        "Uses a tilting platform to control the motion of a ball",
-        "Continuously detects the position of the ball on the platform",
-        "Adjusts the platform angle in real time to keep the ball balanced at a target position",
-        "Demonstrates stable control, even when the ball is disturbed or placed at different starting points",
+        "Monitors Real-Time Fluid Levels using a load cell sensor to track the exact weight of the saline bottle",
+        "Predicts Completion Time by calculating the flow rate (how quickly the weight is dropping) and displaying a 'Time Remaining' estimate",
+        "Notifies the Nurse Station wirelessly as soon as the drip reaches a pre-set 'Completed' level (e.g., 10ml remaining)",
+        "Logs Treatment Data into a centralized database, noting exactly when the drip started and ended for digital medical records",
+        "Visualizes Ward Status through a web dashboard, letting staff see at a glance which drips are active, finishing soon, or have successfully completed",
       ],
     },
     {
@@ -320,7 +322,7 @@ export default function HackAwayPage() {
       id: "multi-modal-severity",
       no: 12,
       title:
-        "Multi-Modal Severity Quantifier – When Images and Reports Speak Together",
+        "Multi-Modal Severity Quantifier",
       icon: BrainCircuit,
       description: "Medical Imaging AI",
       story:
@@ -478,7 +480,7 @@ export default function HackAwayPage() {
               <div className="inline-block bg-yellow-400/10 border border-yellow-400/50 rounded-full px-6 py-3">
                 <span className="text-yellow-400 font-bold text-2xl flex items-center justify-center gap-2">
                   <Trophy className="w-6 h-6" />
-                  Prize Pool Worth ₹50,000
+                  Win Exciting Prizes!
                 </span>
               </div>
             </motion.div>
@@ -554,7 +556,7 @@ export default function HackAwayPage() {
             viewport={{ once: true }}
             className="text-4xl font-bold text-center mb-12"
           >
-            Prize <span className="text-yellow-400">Pool</span>
+            Exciting <span className="text-yellow-400">Prizes</span>
           </motion.h2>
 
           <motion.div
@@ -569,14 +571,14 @@ export default function HackAwayPage() {
 
             <div className="relative z-10">
               <Trophy className="w-20 h-20 text-yellow-400 mx-auto mb-6" />
-              <h3 className="text-6xl md:text-8xl font-bold text-white mb-4">
-                ₹50,000
+              <h3 className="text-4xl md:text-6xl font-bold text-white mb-4">
+                Win Exciting Prizes!
               </h3>
-              <p className="text-2xl text-yellow-400 font-semibold mb-2">
-                Prize Pool Worth
+              <p className="text-xl text-yellow-400 font-semibold mb-4">
+                Cash Prizes, Goodies & Swags
               </p>
               <p className="text-gray-400 text-lg">
-                + Exciting Goodies, Swag & Certificates for all participants
+                + Certificates for all participants
               </p>
             </div>
           </motion.div>
@@ -855,216 +857,231 @@ export default function HackAwayPage() {
 
       {/* Registration Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="bg-linear-to-b from-gray-900 to-gray-950 border-2 border-yellow-400/30 text-white sm:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="space-y-3">
-            <div className="flex items-center justify-center">
-              <div className="p-4 bg-yellow-400/10 rounded-full border border-yellow-400/30">
-                <Laptop className="w-8 h-8 text-yellow-400" />
+        <DialogContent className="bg-linear-to-b from-slate-900 via-slate-900 to-slate-950 border border-slate-700/50 text-white sm:max-w-lg max-h-[85vh] overflow-y-auto p-0 gap-0">
+          {/* Header with gradient accent */}
+          <div className="relative px-6 pt-6 pb-4 border-b border-slate-700/50">
+            <div className="absolute inset-0 bg-linear-to-r from-yellow-400/5 via-orange-400/5 to-yellow-400/5" />
+            <DialogHeader className="relative space-y-3">
+              <div className="flex items-center justify-center">
+                <div className="p-3 bg-linear-to-br from-yellow-400/20 to-orange-500/20 rounded-2xl border border-yellow-400/30 shadow-lg shadow-yellow-400/10">
+                  <Laptop className="w-7 h-7 text-yellow-400" />
+                </div>
               </div>
-            </div>
-            <DialogTitle className="text-2xl text-center font-bold">
-              Register for <span className="text-yellow-400">HackAway</span>
-            </DialogTitle>
-            <DialogDescription className="text-gray-400 text-center">
-              Join the overnight hackathon and showcase your innovation!
-            </DialogDescription>
-          </DialogHeader>
+              <DialogTitle className="text-xl text-center font-bold tracking-tight">
+                Register for{" "}
+                <span className="bg-linear-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                  HackAway
+                </span>
+              </DialogTitle>
+              <DialogDescription className="text-slate-400 text-center text-sm">
+                Join the overnight hackathon and showcase your innovation!
+              </DialogDescription>
+            </DialogHeader>
+          </div>
 
-          {error && !teamData?.teamMembers && (
-            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-red-400 font-medium">{error}</p>
-                <p className="text-gray-400 text-sm mt-2">
-                  {error.includes("team") ? (
-                    <Link
-                      href="/team"
-                      className="inline-flex items-center gap-1 text-yellow-400 hover:text-yellow-300 transition-colors"
-                    >
-                      Create or join a team first
-                      <span className="text-lg">→</span>
-                    </Link>
-                  ) : (
-                    <Link
-                      href="/api/auth/signin"
-                      className="inline-flex items-center gap-1 text-yellow-400 hover:text-yellow-300 transition-colors"
-                    >
-                      Sign in to continue
-                      <span className="text-lg">→</span>
-                    </Link>
+          {/* Content */}
+          <div className="p-6 space-y-5">
+            {error && !teamData?.teamMembers && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-start gap-3">
+                <div className="p-1.5 bg-red-500/20 rounded-lg">
+                  <AlertCircle className="w-4 h-4 text-red-400" />
+                </div>
+                <div className="space-y-1.5">
+                  <p className="text-red-400 font-medium text-sm">{error}</p>
+                  <p className="text-slate-400 text-xs">
+                    {error.includes("team") ? (
+                      <Link
+                        href="/team"
+                        className="inline-flex items-center gap-1.5 text-yellow-400 hover:text-yellow-300 transition-colors font-medium"
+                      >
+                        Create or join a team first
+                        <span className="text-sm">→</span>
+                      </Link>
+                    ) : (
+                      <Link
+                        href="/api/auth/signin"
+                        className="inline-flex items-center gap-1.5 text-yellow-400 hover:text-yellow-300 transition-colors font-medium"
+                      >
+                        Sign in to continue
+                        <span className="text-sm">→</span>
+                      </Link>
+                    )}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {teamData?.alreadyRegistered && (
+              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-5 text-center">
+                <div className="inline-flex p-3 bg-emerald-500/20 rounded-2xl mb-3">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-emerald-400 mb-2">
+                  Already Registered!
+                </h3>
+                <p className="text-slate-400 text-sm">
+                  Your team is registered for Problem Statement:
+                </p>
+                <p className="text-yellow-400 font-semibold mt-2 text-sm">
+                  {getProblemStatementTitle(
+                    teamData.existingProblemStatement || 0,
                   )}
                 </p>
               </div>
-            </div>
-          )}
+            )}
 
-          {teamData?.alreadyRegistered && (
-            <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-5 text-center">
-              <CheckCircle2 className="w-12 h-12 text-green-400 mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-green-400 mb-2">
-                Already Registered!
-              </h3>
-              <p className="text-gray-300">
-                Your team is registered for Problem Statement:
-              </p>
-              <p className="text-yellow-400 font-semibold mt-1">
-                {getProblemStatementTitle(
-                  teamData.existingProblemStatement || 0,
-                )}
-              </p>
-            </div>
-          )}
-
-          {teamData?.teamMembers && !teamData.alreadyRegistered && (
-            <div className="space-y-5">
-              {/* Team Info */}
-              <div className="bg-gray-800/50 rounded-xl p-5 border border-gray-700/50">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-yellow-400/10 rounded-lg">
-                    <Users className="w-5 h-5 text-yellow-400" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-white">
-                      {teamData.teamName}
-                    </h3>
-                    <p className="text-sm text-gray-400">
-                      {teamData.teamMembers.length} team member
-                      {teamData.teamMembers.length !== 1 ? "s" : ""}
-                    </p>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  {teamData.teamMembers.map((member, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-3 p-2 rounded-lg bg-gray-900/50 hover:bg-gray-900 transition-colors"
-                    >
-                      <div className="w-9 h-9 bg-linear-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg shadow-yellow-400/20">
-                        <span className="text-black text-sm font-bold">
-                          {member.name?.charAt(0)?.toUpperCase() || "?"}
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-white truncate">
-                          {member.name || "Unknown"}
-                        </p>
-                        <p className="text-xs text-gray-500 truncate">
-                          {member.email}
-                        </p>
-                      </div>
+            {teamData?.teamMembers && !teamData.alreadyRegistered && (
+              <div className="space-y-5">
+                {/* Team Info Card */}
+                <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-yellow-400/10 rounded-xl border border-yellow-400/20">
+                      <Users className="w-4 h-4 text-yellow-400" />
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Problem Statement Selection */}
-              <div className="space-y-3">
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
-                  <span className="text-yellow-400">🎯</span>
-                  Choose Your Problem Statement
-                </label>
-                <Select
-                  value={selectedProblemStatement}
-                  onValueChange={setSelectedProblemStatement}
-                >
-                  <SelectTrigger className="w-full h-12 bg-gray-800 border-2 border-gray-600 text-white hover:border-yellow-400/50 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all">
-                    <SelectValue
-                      placeholder="Select a problem statement..."
-                      className="text-gray-400"
-                    />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-900 border-2 border-gray-700 shadow-xl max-h-[350px] z-100">
-                    {problemStatements.map((stmt) => (
-                      <SelectItem
-                        key={stmt.no}
-                        value={stmt.no.toString()}
-                        disabled={registrationStats[stmt.no]?.isFull}
-                        className="text-white py-3 px-4 cursor-pointer focus:bg-yellow-400/20 focus:text-white data-highlighted:bg-yellow-400/20 data-highlighted:text-white data-disabled:opacity-50 data-disabled:cursor-not-allowed"
+                    <div>
+                      <h3 className="text-base font-semibold text-white">
+                        {teamData.teamName}
+                      </h3>
+                      <p className="text-xs text-slate-400">
+                        {teamData.teamMembers.length} team member
+                        {teamData.teamMembers.length !== 1 ? "s" : ""}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    {teamData.teamMembers.map((member, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-3 p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-900 transition-colors border border-slate-700/30"
                       >
-                        <div className="flex items-center gap-3 w-full">
-                          <span
-                            className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold shrink-0 ${
-                              registrationStats[stmt.no]?.isFull
-                                ? "bg-red-500/30 text-red-400"
-                                : "bg-yellow-400/30 text-yellow-400"
-                            }`}
-                          >
-                            {stmt.no}
-                          </span>
-                          <span
-                            className={`flex-1 ${
-                              registrationStats[stmt.no]?.isFull
-                                ? "text-gray-500"
-                                : "text-white"
-                            }`}
-                          >
-                            {stmt.title}
-                          </span>
-                          {registrationStats[stmt.no] && (
+                        <div className="w-8 h-8 bg-linear-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-xs font-bold text-black shadow-md">
+                          {member.name?.charAt(0)?.toUpperCase() || "?"}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-white text-sm truncate">
+                            {member.name || "Unknown"}
+                          </p>
+                          <p className="text-xs text-slate-500 truncate">
+                            {member.email}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Problem Statement Selection */}
+                <div className="space-y-3">
+                  <label className="flex items-center gap-2 text-sm font-medium text-slate-300">
+                    <span className="text-yellow-400">🎯</span>
+                    Choose Your Problem Statement
+                  </label>
+                  <Select
+                    value={selectedProblemStatement}
+                    onValueChange={setSelectedProblemStatement}
+                  >
+                    <SelectTrigger className="w-full h-11 bg-slate-800/80 border border-slate-600/50 text-white hover:border-yellow-400/50 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all rounded-xl">
+                      <SelectValue
+                        placeholder="Select a problem statement..."
+                        className="text-slate-400"
+                      />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-900 border border-slate-700 shadow-2xl max-h-[300px] z-[100] rounded-xl">
+                      {problemStatements.map((stmt) => (
+                        <SelectItem
+                          key={stmt.no}
+                          value={stmt.no.toString()}
+                          disabled={registrationStats[stmt.no]?.isFull}
+                          className="text-white py-2.5 px-3 cursor-pointer focus:bg-yellow-400/15 focus:text-white data-[highlighted]:bg-yellow-400/15 data-[highlighted]:text-white data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed rounded-lg mx-1 my-0.5"
+                        >
+                          <div className="flex items-center gap-2.5 w-full">
                             <span
-                              className={`text-xs px-2 py-1 rounded-md font-medium shrink-0 ${
-                                registrationStats[stmt.no].isFull
-                                  ? "bg-red-500/30 text-red-400"
-                                  : "bg-gray-700 text-gray-300"
+                              className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold shrink-0 ${
+                                registrationStats[stmt.no]?.isFull
+                                  ? "bg-red-500/20 text-red-400"
+                                  : "bg-yellow-400/20 text-yellow-400"
                               }`}
                             >
-                              {registrationStats[stmt.no].count}/
-                              {registrationStats[stmt.no].max}
-                              {registrationStats[stmt.no].isFull && " FULL"}
+                              {stmt.no}
                             </span>
-                          )}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                            <span
+                              className={`flex-1 text-sm ${
+                                registrationStats[stmt.no]?.isFull
+                                  ? "text-slate-500"
+                                  : "text-white"
+                              }`}
+                            >
+                              {stmt.title}
+                            </span>
+                            {registrationStats[stmt.no] && (
+                              <span
+                                className={`text-xs px-2 py-0.5 rounded-md font-medium shrink-0 ${
+                                  registrationStats[stmt.no].isFull
+                                    ? "bg-red-500/20 text-red-400"
+                                    : "bg-slate-700 text-slate-400"
+                                }`}
+                              >
+                                {registrationStats[stmt.no].count}/
+                                {registrationStats[stmt.no].max}
+                                {registrationStats[stmt.no].isFull && " FULL"}
+                              </span>
+                            )}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
-                {selectedProblemStatement && (
-                  <div className="bg-yellow-400/5 border border-yellow-400/20 rounded-lg p-3">
-                    <p className="text-sm text-gray-400">
-                      Selected:{" "}
-                      <span className="text-yellow-400 font-medium">
-                        #{selectedProblemStatement} -{" "}
+                  {selectedProblemStatement && (
+                    <div className="bg-yellow-400/5 border border-yellow-400/20 rounded-xl p-3">
+                      <p className="text-sm text-slate-300 font-medium">
+                        Selected:
+                      </p>
+                      <p className="text-sm text-yellow-400 font-semibold mt-1 break-words">
+                        #{selectedProblemStatement} –{" "}
                         {getProblemStatementTitle(
                           parseInt(selectedProblemStatement),
                         )}
-                      </span>
-                    </p>
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {error && (
+                  <div className="flex items-center gap-2 text-red-400 text-xs bg-red-500/10 p-3 rounded-xl border border-red-500/20">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    {error}
                   </div>
                 )}
               </div>
+            )}
+          </div>
 
-              {error && (
-                <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 p-3 rounded-lg">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  {error}
-                </div>
-              )}
-            </div>
-          )}
-
+          {/* Footer */}
           {teamData?.teamMembers && !teamData.alreadyRegistered && (
-            <DialogFooter className="flex-col sm:flex-row gap-3 mt-2">
-              <Button
-                variant="outline"
-                onClick={() => setIsDialogOpen(false)}
-                className="flex-1 border-gray-600 text-black hover:bg-gray-800 hover:text-white"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleConfirmRegistration}
-                className="flex-1 bg-linear-to-r from-yellow-400 to-orange-500 text-black font-semibold hover:from-yellow-500 hover:to-orange-600 shadow-lg shadow-yellow-400/25"
-                disabled={isLoading || !selectedProblemStatement}
-              >
-                {isLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                ) : (
-                  <CheckCircle2 className="w-4 h-4 mr-2" />
-                )}
-                Confirm Registration
-              </Button>
-            </DialogFooter>
+            <div className="border-t border-slate-700/50 px-6 py-4 bg-slate-900/50">
+              <DialogFooter className="flex-col sm:flex-row gap-2.5">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                  className="flex-1 h-10 border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-500 rounded-xl transition-all"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleConfirmRegistration}
+                  className="flex-1 h-10 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold hover:from-yellow-500 hover:to-orange-600 shadow-lg shadow-yellow-400/20 rounded-xl transition-all"
+                  disabled={isLoading || !selectedProblemStatement}
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  ) : (
+                    <CheckCircle2 className="w-4 h-4 mr-2" />
+                  )}
+                  Confirm Registration
+                </Button>
+              </DialogFooter>
+            </div>
           )}
         </DialogContent>
       </Dialog>
