@@ -41,6 +41,9 @@ import {
   Wallet,
   Music,
   Scale,
+  AlertTriangle,
+  Inbox,
+  BrainCircuit,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -191,9 +194,9 @@ export default function HackAwayPage() {
     {
       id: "gesture-drift-racer",
       no: 4,
-      title: "Glove-Controlled Drift Racer",
+      title: "Glove-Controlled Drift Racer: Master Every Move!",
       icon: Gauge,
-      description: "Master Every Move!",
+      description: "Gesture-Based Robotic Control",
       story:
         "Vatsalya and his team wanted to control a robot without buttons or joysticks—just hand gestures. They built a three-wheeled bot with two powered wheels and a gesture-controlled glove using an IMU sensor. At first, the bot moved erratically, failing to follow commands. After refining their gesture-to-motion algorithm, they mapped movements correctly: Tilt forward → Move forward, Tilt left/right → Turn, Fist close → Stop. Finally, with a flick of Vatsalya's wrist, the bot moved perfectly. They had solved the problem—creating an intuitive, hands-free robotic control system.",
       challenge: [
@@ -203,24 +206,8 @@ export default function HackAwayPage() {
       ],
     },
     {
-      id: "drip-sync",
-      no: 5,
-      title: "Drip-Sync: No More Guesswork!",
-      icon: HeartPulse,
-      description: "Smart Saline Monitoring System",
-      story:
-        "Sarah manages a busy hospital ward where tracking IV saline progress involves constant checking and guessing. One afternoon, while she attends to a patient in Room 1, the IV drip for a patient in Room 4 runs out. Without an alert, the patient waits with an empty bottle for twenty minutes, growing anxious and repeatedly pressing the call button. The next day, Sarah tries to stay proactive by making frequent rounds, but she often finds bottles are still 70% full. She realizes she is wasting time checking drips that seem fine while other patients might actually need her help. She needs a way to know exactly when a treatment has finished without hovering over each bed. What if the saline stand could communicate with the nurse station, providing a live countdown and an instant alert as soon as a drip is complete?",
-      challenge: [
-        "Monitors Real-Time Fluid Levels using a load cell sensor to track the exact weight of the saline bottle",
-        "Predicts Completion Time by calculating the flow rate (how quickly the weight is dropping) and displaying a 'Time Remaining' estimate",
-        "Notifies the Nurse Station wirelessly as soon as the drip reaches a pre-set 'Completed' level (e.g., 10ml remaining)",
-        "Logs Treatment Data into a centralized database, noting exactly when the drip started and ended for digital medical records",
-        "Visualizes Ward Status through a web dashboard, letting staff see at a glance which drips are active, finishing soon, or have successfully completed",
-      ],
-    },
-    {
       id: "trekbot",
-      no: 6,
+      no: 5,
       title: "TrekBot – A Simple Quadruped Walking Robot",
       icon: Bot,
       description: "Four-Legged Walking Robot",
@@ -234,7 +221,7 @@ export default function HackAwayPage() {
     },
     {
       id: "chordmate",
-      no: 7,
+      no: 6,
       title: "ChordMate – Never Play the Wrong Chord Again!",
       icon: Music,
       description: "Real-Time Chord Detection",
@@ -249,7 +236,7 @@ export default function HackAwayPage() {
     },
     {
       id: "ball-balancer",
-      no: 8,
+      no: 7,
       title: "Ayushman Test – Steady Hands, Smart Control",
       icon: Scale,
       description: "Ball Balancing Platform",
@@ -264,7 +251,7 @@ export default function HackAwayPage() {
     },
     {
       id: "railway-fault-detector",
-      no: 9,
+      no: 8,
       title: "Automated Railway Track Fault Detector",
       icon: TrainFront,
       description: "Prince's Railway Safety System",
@@ -280,7 +267,7 @@ export default function HackAwayPage() {
     },
     {
       id: "financial-ai",
-      no: 10,
+      no: 9,
       title: "Agentic AI for Intelligent Personal Financial Decision-Making",
       icon: Wallet,
       description: "Smart Financial Agent",
@@ -295,6 +282,55 @@ export default function HackAwayPage() {
         "Natural language interaction",
         "Simulated real-time market reactions",
         "Ethical & privacy-aware design",
+      ],
+    },
+    {
+      id: "rescuenet",
+      no: 10,
+      title: "RescueNet – Every Minute Knows Where to Go",
+      icon: AlertTriangle,
+      description: "Emergency Response Coordination System",
+      story:
+        "After a natural disaster, emergency teams are flooded with distress messages from calls, social media, and helpline portals. Some requests are urgent, some are duplicates, some lack location clarity. With limited rescue teams and time-critical decisions, manual triaging becomes chaotic. Lives are lost not because help didn't exist—but because prioritization failed. An emergency coordinator starts thinking—what if incoming information could be intelligently filtered, ranked, and routed in real time?",
+      challenge: [
+        "Ingests distress reports from multiple sources (text, forms, social feeds, simulated inputs)",
+        "Uses NLP to extract urgency, location clues, and type of assistance needed",
+        "Assigns a severity score and priority rank to each request",
+        "Groups duplicate or related reports to avoid redundancy",
+        "Displays a live operational dashboard for responders showing what needs attention now",
+      ],
+    },
+    {
+      id: "salil-inbox",
+      no: 11,
+      title: "Salil's Inbox – Signal, Not Noise",
+      icon: Inbox,
+      description: "Intelligent Workflow Analyzer",
+      story:
+        "Salil works in a growing startup where communication is spread across email, Slack, Jira, GitHub, and meeting notes. Important decisions get buried under notifications, duplicate threads, and long message chains. Critical action items are missed, responsibilities become unclear, and people waste hours just figuring out what actually matters. Salil starts wondering—what if software could automatically understand conversations, extract commitments, and keep everyone aligned without forcing people to change how they communicate?",
+      challenge: [
+        "Ingests data from multiple collaboration sources (simulated APIs or datasets)",
+        "Identifies actionable items, deadlines, and owners from conversations",
+        "Detects conflicting decisions or unresolved threads",
+        "Tracks follow-ups and highlights overdue actions",
+        "Presents a clean, role-based dashboard showing 'what needs attention now'",
+      ],
+    },
+    {
+      id: "multi-modal-severity",
+      no: 12,
+      title:
+        "Multi-Modal Severity Quantifier – When Images and Reports Speak Together",
+      icon: BrainCircuit,
+      description: "Medical Imaging AI",
+      story:
+        "In a busy hospital, a radiologist reviews a chest X-ray on the screen. The image shows certain abnormalities, but it doesn't clearly answer one important question: How severe is the disease? To decide, the doctor reads the accompanying radiology report, which includes phrases like mild opacity, moderate involvement, or severe consolidation. The final decision comes from combining what is seen in the image with what is written in the report. However, hospitals generate thousands of X-rays and reports every day. Manually analyzing each image and report pair is time-consuming, and severity judgments can vary between experts. The radiologist wonders—what if a system could automatically read both the image and the report and consistently determine disease severity?",
+      challenge: [
+        "Analyzes chest X-ray images and radiology reports from the MIMIC-CXR dataset",
+        "Understands radiology reports by extracting explicit severity cues and underlying clinical patterns",
+        "Learns visual features from X-ray images that indicate disease progression",
+        "Fuses text-based and image-based features into a single predictive model",
+        "Classifies disease severity as Mild, Moderate, or Severe",
       ],
     },
   ];

@@ -11,13 +11,15 @@ const DEFAULT_PROBLEM_STATEMENTS = [
   { id: 1, title: "The Reviewer Who Never Sleeps", maxParticipants: 10 },
   { id: 2, title: "Seeing the World with One Sensor", maxParticipants: 10 },
   { id: 3, title: "Finding the Way, One Step at a Time", maxParticipants: 10 },
-  { id: 4, title: "Glove-Controlled Drift Racer", maxParticipants: 10 },
-  { id: 5, title: "Drip-Sync: No More Guesswork!", maxParticipants: 10 },
-  { id: 6, title: "TrekBot – A Simple Quadruped Walking Robot", maxParticipants: 10 },
-  { id: 7, title: "ChordMate – Never Play the Wrong Chord Again!", maxParticipants: 10 },
-  { id: 8, title: "Ayushman Test – Steady Hands, Smart Control", maxParticipants: 10 },
-  { id: 9, title: "Automated Railway Track Fault Detector", maxParticipants: 10 },
-  { id: 10, title: "Agentic AI for Intelligent Personal Financial Decision-Making", maxParticipants: 10 },
+  { id: 4, title: "Glove-Controlled Drift Racer: Master Every Move!", maxParticipants: 10 },
+  { id: 5, title: "TrekBot – A Simple Quadruped Walking Robot", maxParticipants: 10 },
+  { id: 6, title: "ChordMate – Never Play the Wrong Chord Again!", maxParticipants: 10 },
+  { id: 7, title: "Ayushman Test – Steady Hands, Smart Control", maxParticipants: 10 },
+  { id: 8, title: "Automated Railway Track Fault Detector", maxParticipants: 10 },
+  { id: 9, title: "Agentic AI for Intelligent Personal Financial Decision-Making", maxParticipants: 10 },
+  { id: 10, title: "RescueNet – Every Minute Knows Where to Go", maxParticipants: 10 },
+  { id: 11, title: "Salil's Inbox – Signal, Not Noise", maxParticipants: 10 },
+  { id: 12, title: "Multi-Modal Severity Quantifier – When Images and Reports Speak Together", maxParticipants: 10 },
 ];
 
 export type HackawayRegistrationState = {
