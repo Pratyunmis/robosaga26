@@ -40,7 +40,6 @@ import {
   TrainFront,
   Wallet,
   Music,
-  Scale,
   AlertTriangle,
   Inbox,
   BrainCircuit,
@@ -126,7 +125,7 @@ export default function HackAwayPage() {
 
   const schedule = [
     { time: "7:00 PM", event: "Check-in & Registration" },
-    { time: "7:30 PM", event: "Opening Ceremony & Problem Statement Reveal" },
+    { time: "7:30 PM", event: "Opening Ceremony" },
     { time: "8:00 PM", event: "Hacking Begins!" },
     { time: "10:00 PM", event: "Dinner Break" },
     { time: "12:00 AM", event: "Midnight Snacks" },

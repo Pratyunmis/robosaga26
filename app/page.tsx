@@ -8,6 +8,14 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Laptop,
   Bot,
   Target,
@@ -25,6 +33,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
+  AlertOctagon,
+  Megaphone,
+  XCircle,
+  ArrowRight,
+  CheckCircle2,
 } from "lucide-react";
 import { Vortex } from "@/components/ui/vortex";
 import Image from "next/image";
@@ -124,6 +137,7 @@ export default function Home() {
     "all" | "hackathon" | "speaker"
   >("all");
   const [imageLoading, setImageLoading] = useState(true);
+  const [showNoticeDialog, setShowNoticeDialog] = useState(true);
 
   const filteredImages =
     activeFilter === "all"
@@ -151,7 +165,7 @@ export default function Home() {
     if (selectedImage !== null) {
       setImageLoading(true);
       setSelectedImage(
-        (selectedImage - 1 + filteredImages.length) % filteredImages.length
+        (selectedImage - 1 + filteredImages.length) % filteredImages.length,
       );
     }
   };
@@ -663,6 +677,129 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* Important Notice Dialog for HackAway */}
+      <Dialog open={showNoticeDialog} onOpenChange={setShowNoticeDialog}>
+        <DialogContent className="sm:max-w-lg bg-gray-950 border-2 border-red-500/70 text-white overflow-hidden">
+          {/* Animated background effects */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-red-600/30 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-yellow-500/30 rounded-full blur-3xl animate-pulse delay-500" />
+          </div>
+
+          <DialogHeader className="relative z-10">
+            <div className="flex justify-center mb-4">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", bounce: 0.5 }}
+                className="relative"
+              >
+                <div className="absolute inset-0 bg-red-500/40 rounded-full blur-xl animate-ping" />
+                <div className="relative p-4 bg-linear-to-br from-red-500 to-orange-500 rounded-full shadow-xl shadow-red-500/50">
+                  <AlertOctagon className="w-10 h-10 text-white" />
+                </div>
+              </motion.div>
+            </div>
+
+            <DialogTitle className="text-center text-2xl font-bold text-yellow-400">
+              ⚠️ Important Notice
+            </DialogTitle>
+
+            <DialogDescription asChild>
+              <div className="space-y-4 mt-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="bg-red-950/80 border border-red-500/60 rounded-xl p-4 text-center"
+                >
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Megaphone className="w-5 h-5 text-yellow-400" />
+                    <span className="text-yellow-400 font-bold text-lg">
+                      Attention Unstop Registrants!
+                    </span>
+                  </div>
+                  <p className="text-white text-base leading-relaxed">
+                    If you have registered for{" "}
+                    <span className="text-yellow-400 font-semibold">
+                      HackAway
+                    </span>{" "}
+                    via{" "}
+                    <span className="text-orange-400 font-semibold">
+                      Unstop
+                    </span>
+                    , you{" "}
+                    <span className="text-red-400 font-bold uppercase">
+                      MUST
+                    </span>{" "}
+                    also register through this website.
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="bg-gray-900 border border-red-500/40 rounded-xl p-4"
+                >
+                  <div className="flex items-start gap-3">
+                    <XCircle className="w-6 h-6 text-red-500 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-red-400 font-bold mb-1">
+                        Unstop-only registrations will NOT be considered
+                      </p>
+                      <p className="text-gray-200 text-sm">
+                        Your participation won&apos;t be valid without
+                        registering here.
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                  className="bg-green-950/80 border border-green-500/60 rounded-xl p-4"
+                >
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-6 h-6 text-green-400 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-green-400 font-bold mb-1">
+                        Complete your registration here
+                      </p>
+                      <p className="text-gray-200 text-sm">
+                        Create/join a team and register for HackAway to
+                        participate.
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="relative z-10 mt-6 flex flex-col gap-3 sm:flex-col">
+            <Link href="/hackaway" className="w-full">
+              <Button
+                onClick={() => setShowNoticeDialog(false)}
+                className="w-full bg-linear-to-r from-yellow-500 to-orange-500 text-black font-bold py-6 text-lg hover:from-yellow-400 hover:to-orange-400 transition-all shadow-lg shadow-yellow-500/40 group"
+              >
+                Go to HackAway Registration
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <Button
+              variant="ghost"
+              onClick={() => setShowNoticeDialog(false)}
+              className="w-full text-gray-300 hover:text-white hover:bg-white/10"
+            >
+              I&apos;ll register later
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
