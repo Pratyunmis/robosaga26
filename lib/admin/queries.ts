@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { teams, teamMembers, users, joinRequests, events, eventRegistrations, hackAwayRegistrations, problemStatementSettings } from "@/db/schema";
-import { count, desc, sql, eq } from "drizzle-orm";
+import { count, desc, sql, eq, inArray } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 
 export async function getAdminStats() {
@@ -188,11 +188,38 @@ export async function getEventDetails(eventId: string) {
     .where(eq(eventRegistrations.eventId, eventId))
     .orderBy(desc(eventRegistrations.registeredAt));
 
+  // Fetch team members for all teams
+  const teamIds = registrations.map(reg => reg.teams.id);
+  const allTeamMembers = teamIds.length > 0 ? await db
+    .select({
+      teamId: teamMembers.teamId,
+      userId: teamMembers.userId,
+      role: teamMembers.role,
+      name: users.name,
+      email: users.email,
+      phoneNo: users.phoneNo,
+      rollNo: users.rollNo,
+      branch: users.branch,
+    })
+    .from(teamMembers)
+    .innerJoin(users, eq(teamMembers.userId, users.id))
+    .where(inArray(teamMembers.teamId, teamIds)) : [];
+
+  // Group team members by team ID
+  const teamMembersMap = new Map<string, typeof allTeamMembers>();
+  allTeamMembers.forEach(member => {
+    if (!teamMembersMap.has(member.teamId)) {
+      teamMembersMap.set(member.teamId, []);
+    }
+    teamMembersMap.get(member.teamId)!.push(member);
+  });
+
   // Transform to match expected format
   const formattedRegistrations = registrations.map(reg => ({
     id: reg.id,
     registered_at: reg.registered_at?.toISOString() || new Date().toISOString(),
     teams: reg.teams,
+    team_members: teamMembersMap.get(reg.teams.id) || [],
     event_results: [{
       rank: reg.event_results.rank || 0,
       marks: reg.event_results.marks || 0,

@@ -16,7 +16,16 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { ArrowUpDown, Medal, Trash2, Save } from "lucide-react";
+import {
+  ArrowUpDown,
+  Medal,
+  Trash2,
+  Save,
+  Crown,
+  Phone,
+  Mail,
+  GraduationCap,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +56,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+type TeamMember = {
+  userId: string;
+  role: string;
+  name: string | null;
+  email: string | null;
+  phoneNo: string | null;
+  rollNo: string | null;
+  branch: string | null;
+};
+
 type TeamRegistration = {
   id: string;
   registered_at: string;
@@ -56,6 +75,7 @@ type TeamRegistration = {
     slug: string;
     team_leader_id: string;
   };
+  team_members?: TeamMember[];
   event_results?: Array<{
     rank: number;
     marks: number;
@@ -95,6 +115,11 @@ export function TeamResultsTable({
   const [teamToDelete, setTeamToDelete] = useState<{
     id: string;
     name: string;
+  } | null>(null);
+  const [selectedTeamMembers, setSelectedTeamMembers] = useState<{
+    teamName: string;
+    leaderId: string;
+    members: TeamMember[];
   } | null>(null);
 
   const router = useRouter();
@@ -220,6 +245,31 @@ export function TeamResultsTable({
         },
       },
       {
+        id: "team_members",
+        header: "Team Members",
+        cell: ({ row }) => {
+          const teamMembers = row.original.team_members || [];
+          const team = row.original.teams;
+          return (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 font-medium"
+              onClick={() =>
+                setSelectedTeamMembers({
+                  teamName: team.name,
+                  leaderId: team.team_leader_id,
+                  members: teamMembers,
+                })
+              }
+            >
+              {teamMembers.length}{" "}
+              {teamMembers.length === 1 ? "member" : "members"}
+            </Button>
+          );
+        },
+      },
+      {
         id: "rank",
         header: "Rank",
         cell: ({ row, table }) => {
@@ -234,8 +284,8 @@ export function TeamResultsTable({
               existingResult.rank === 1
                 ? "text-yellow-600 border-yellow-600/50"
                 : existingResult.rank === 2
-                ? "text-gray-400 border-gray-400/50"
-                : "text-amber-700 border-amber-700/50";
+                  ? "text-gray-400 border-gray-400/50"
+                  : "text-amber-700 border-amber-700/50";
             return (
               <Badge variant="outline" className={rankColor}>
                 <Medal className="mr-1 h-4 w-4" />
@@ -513,6 +563,93 @@ export function TeamResultsTable({
               }}
             >
               Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={!!selectedTeamMembers}
+        onOpenChange={(open) => !open && setSelectedTeamMembers(null)}
+      >
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedTeamMembers?.teamName} - Team Members
+            </DialogTitle>
+            <DialogDescription>
+              {selectedTeamMembers?.members.length}{" "}
+              {selectedTeamMembers?.members.length === 1 ? "member" : "members"}{" "}
+              in this team
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+            {selectedTeamMembers?.members.map((member) => {
+              const isLeader = member.userId === selectedTeamMembers.leaderId;
+              return (
+                <div
+                  key={member.userId}
+                  className={`p-4 rounded-lg border ${
+                    isLeader
+                      ? "bg-yellow-50 border-yellow-300 dark:bg-yellow-950/20 dark:border-yellow-700"
+                      : "bg-gray-50 dark:bg-gray-900"
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h4 className="font-semibold text-lg">
+                          {member.name || "Unknown"}
+                        </h4>
+                        {isLeader && (
+                          <Badge
+                            variant="default"
+                            className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                          >
+                            <Crown className="mr-1 h-3 w-3" />
+                            Leader
+                          </Badge>
+                        )}
+                        {!isLeader && (
+                          <Badge variant="secondary">{member.role}</Badge>
+                        )}
+                      </div>
+                      <div className="space-y-1.5 text-sm">
+                        {member.email && (
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <Mail className="h-4 w-4" />
+                            <span>{member.email}</span>
+                          </div>
+                        )}
+                        {member.phoneNo && (
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <Phone className="h-4 w-4" />
+                            <span className="font-mono">{member.phoneNo}</span>
+                          </div>
+                        )}
+                        {(member.rollNo || member.branch) && (
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <GraduationCap className="h-4 w-4" />
+                            <span>
+                              {member.rollNo && member.branch
+                                ? `${member.rollNo} • ${member.branch}`
+                                : member.rollNo || member.branch}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setSelectedTeamMembers(null)}
+            >
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>
