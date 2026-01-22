@@ -188,6 +188,19 @@ export async function registerForHackaway(
     .innerJoin(users, eq(teamMembers.userId, users.id))
     .where(eq(teamMembers.teamId, teamId));
 
+  // Validate team size (minimum 2, maximum 4 members)
+  const memberCount = members.length;
+  if (memberCount < 2) {
+    return { 
+      error: "Your team must have at least 2 members to register for HackAway. Please add more members to your team." 
+    };
+  }
+  if (memberCount > 4) {
+    return { 
+      error: "Your team has more than 4 members. HackAway teams can have a maximum of 4 members. Please adjust your team size." 
+    };
+  }
+
   // Register the team
   try {
     await db.insert(hackAwayRegistrations).values({
